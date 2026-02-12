@@ -1,0 +1,13 @@
+Stories alive                          ✅
+
+Add a settings page for dark mode      ✅
+
+THEME DATA                             ✅
+
+Profile page improve                   ✅
+
+Bottom Navi improve                    ✅
+
+Notification page Icons                ✅
+
+Search Page implement                   
