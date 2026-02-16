@@ -9,7 +9,7 @@ class AppTheme {
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.white,
       brightness: Brightness.light,
-      surface: Colors.white
+      surface: Colors.white,
     ),
     
     appBarTheme: AppBarTheme(
@@ -52,6 +52,7 @@ class AppTheme {
       seedColor: Colors.black,
       brightness: Brightness.dark,
       surface: Colors.black,
+      onPrimary: Colors.white
     ),
     
     appBarTheme: AppBarTheme(

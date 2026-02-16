@@ -9,7 +9,6 @@ import 'package:social_media_app/widgets/specific/bottom_nav.dart';
 
 class AppRoutes {
   static Route<dynamic> generateRoutes(RouteSettings settings, Function(bool) toggleTheme){
-
     switch(settings.name){
       case '/login' :
         return MaterialPageRoute(builder: (context) => LoginPage());
@@ -18,7 +17,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (context) => RegistrationPage());
 
       case '/start':
-        return MaterialPageRoute(builder: (context) => BottomNav());
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(builder: (context) => BottomNav( username: args["name"] ));
 
       case '/settings':
         return MaterialPageRoute(builder: (context) => SettingsPage(toggleTheme: toggleTheme));

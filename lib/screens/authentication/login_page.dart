@@ -3,7 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_media_app/core/utils/validators.dart';
 import 'package:social_media_app/screens/authentication/widgets/clickable_rich_text.dart';
 import 'package:social_media_app/screens/authentication/widgets/custom_text_box.dart';
+import 'package:social_media_app/screens/authentication/widgets/google_signin.dart';
 import 'package:social_media_app/screens/authentication/widgets/heading_text.dart';
+import 'package:social_media_app/screens/authentication/widgets/or_line.dart';
 import 'package:social_media_app/widgets/common/appname_text.dart';
 
 class LoginPage extends StatefulWidget {
@@ -84,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                         );
                         
                         if(submitSuccess){
-                          Navigator.pushReplacementNamed(context, '/start');
+                          Navigator.pushReplacementNamed(context, '/start', arguments: {"name": "Postily"});
                           
                           final SharedPreferences prefs = await SharedPreferences.getInstance();
                           await prefs.setBool('login', true);
@@ -105,6 +107,10 @@ class _LoginPageState extends State<LoginPage> {
                     clickableText: "Create here", 
                     pathName: "register"
                   ),
+
+                  OrLine(),
+
+                  GoogleSignin(),
                 ],
               ), 
             ),

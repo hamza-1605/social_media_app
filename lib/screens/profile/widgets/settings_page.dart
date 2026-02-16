@@ -1,5 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:social_media_app/widgets/common/appname_text.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -37,23 +38,31 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
           ),
-          SizedBox(height: 10,),
+
+          SizedBox(height: 10),
+          
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: ListTile(
               title: Text("Log out" , style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               trailing: Icon(Icons.exit_to_app, size: 30.0),
               
-              onTap: () async {
-                Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-                
-                final SharedPreferences prefs = await SharedPreferences.getInstance();
-                await prefs.setBool('login', false);
-              },
+              onTap: () => logOut(),
             ),
           ),
         ],
       ),
     );
   }
+
+
+
+  void logOut() async {
+    await GoogleSignIn().signOut();
+    await FirebaseAuth.instance.signOut();
+    
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+  }
+
 }

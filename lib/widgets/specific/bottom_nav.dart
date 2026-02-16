@@ -5,7 +5,8 @@ import 'package:social_media_app/screens/profile/profile_page.dart';
 import 'package:social_media_app/screens/search/search_page.dart';
 
 class BottomNav extends StatefulWidget {
-  const BottomNav({super.key});
+  const BottomNav({super.key, required this.username});
+  final String username;
 
   @override
   State<BottomNav> createState() => _BottomNavState();
@@ -23,7 +24,7 @@ class _BottomNavState extends State<BottomNav> {
         HomePage(),
         SearchPage(),
         NotificationsPage(),
-        ProfilePage(),
+        ProfilePage( username: widget.username ),
       ][currentIndex],
 
 
