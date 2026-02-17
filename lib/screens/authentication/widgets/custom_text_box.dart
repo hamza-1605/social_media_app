@@ -10,6 +10,8 @@ class CustomTextBox extends StatelessWidget {
     this.obscureText = false,
     required this.node,
     required this.submit,
+    this.suffixIcon,
+    this.suffixPress
   });
 
   final TextEditingController controller;
@@ -18,6 +20,8 @@ class CustomTextBox extends StatelessWidget {
   final VoidCallback submit;
   final bool obscureText;
   final String? Function(String?)? validator;
+  final IconData? suffixIcon;
+  final VoidCallback? suffixPress;
   
 
   @override
@@ -27,8 +31,16 @@ class CustomTextBox extends StatelessWidget {
       obscureText: obscureText,
       focusNode: node,
       onFieldSubmitted: (value) => submit() ,
-      
+      onTapOutside: (event) => FocusScope.of(context).unfocus(),
       decoration: InputDecoration(
+        labelText: label,
+        suffixIcon: suffixIcon != null 
+          ? IconButton(
+            onPressed: suffixPress, 
+            icon: Icon(suffixIcon)
+          )
+          : null,
+
         border: OutlineInputBorder(
           borderSide: BorderSide( color: AppColors.middlewareGrey, width: 0.5 ),
         ),
@@ -46,7 +58,6 @@ class CustomTextBox extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: Colors.red, width: 1)
         ),
-        labelText: label,
       ),
       
       validator: validator,

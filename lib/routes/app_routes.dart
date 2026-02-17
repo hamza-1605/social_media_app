@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:social_media_app/core/utils/error_page.dart';
 import 'package:social_media_app/screens/authentication/login_page.dart';
 import 'package:social_media_app/screens/authentication/registration_page.dart';
+import 'package:social_media_app/screens/authentication/widgets/forgot_password_page.dart';
 import 'package:social_media_app/screens/home/widgets/story_preview.dart';
 import 'package:social_media_app/screens/profile/widgets/settings_page.dart';
 import 'package:social_media_app/screens/profile/widgets/view_post.dart';
@@ -26,10 +27,14 @@ class AppRoutes {
       case '/viewpost':
         return MaterialPageRoute(builder: (context) => ViewPost());
 
+
       case '/story':
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(builder: (context) => StoryPreview( id: args["id"] ));
 
+      case '/forgot-password':
+        return MaterialPageRoute(builder: (context) => ForgotPasswordPage());
+        
       default:
         return MaterialPageRoute(builder: (context) => ErrorPage(keyword: "error"));
     }

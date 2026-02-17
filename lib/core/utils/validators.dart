@@ -61,7 +61,6 @@ class Validators {
   static bool submit({
     required BuildContext context, 
     required GlobalKey<FormState> formKey,
-    required List<TextEditingController> controllers
   }){
     final form = formKey.currentState! ;
     if( !form.validate() )  return false;
@@ -69,11 +68,18 @@ class Validators {
     form.save();
     FocusScope.of(context).unfocus();
     
+    return true;
+  }
+
+  static void clearControllers({
+    required List<TextEditingController> controllers,
+    required GlobalKey<FormState> formKey,
+  }){
+    final form = formKey.currentState!;
+    
     for( final controller in controllers ) {
       controller.clear();
     }
-    
     form.reset();
-    return true;
   }
 }

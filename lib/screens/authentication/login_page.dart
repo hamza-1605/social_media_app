@@ -1,5 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:social_media_app/core/constants/app_colors.dart';
 import 'package:social_media_app/core/utils/validators.dart';
 import 'package:social_media_app/screens/authentication/widgets/clickable_rich_text.dart';
 import 'package:social_media_app/screens/authentication/widgets/custom_text_box.dart';
@@ -21,6 +22,8 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
   FocusNode emailNode = FocusNode();
   FocusNode passwordNode = FocusNode();
+  bool loading = false;
+  bool showPassword = false;
 
   @override
   void dispose() {
@@ -69,34 +72,50 @@ class _LoginPageState extends State<LoginPage> {
                     label: "Password",
                     submit: () => FocusScope.of(context).unfocus(),
                     validator: (password) => Validators.loginPasswordValidator(password),
+                    obscureText: !showPassword,
+                    suffixIcon: passwordVisibility( showPassword ),
+                    suffixPress: () => setState(() => showPassword = !showPassword),
+                  ),
+
+                  // Reset Password
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/forgot-password');
+                        },
+                        child: Text( 
+                          "Forgot password?", 
+                          style: TextStyle(
+                            color: AppColors.logoColor,
+                            fontWeight: FontWeight.w600
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
 
                   // Submit button
                   SizedBox(
                     width: double.maxFinite,
                     child: FilledButton(
-                      onPressed: () async {
-                        bool submitSuccess = Validators.submit(
-                          context: context,
-                          formKey: formKey,
-                          controllers: [
-                            emailController,
-                            passwordController,
-                          ]
-                        );
-                        
-                        if(submitSuccess){
-                          Navigator.pushReplacementNamed(context, '/start', arguments: {"name": "Postily"});
-                          
-                          final SharedPreferences prefs = await SharedPreferences.getInstance();
-                          await prefs.setBool('login', true);
-                        }
+                      onPressed: () {
+                        logIn();
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: Text("Log in", style: TextStyle(
-                          fontSize: 15,
-                        ),),
+                        child: loading 
+                          ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
+                          : Text("Log in", style: TextStyle(
+                            fontSize: 15,
+                          ),)
                       ),
                     ),
                   ),
@@ -104,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                   // bottom
                   ClickableRichText(
                     simpleText: "Don't have an account? ", 
-                    clickableText: "Create here", 
+                    clickableText: "Create here.", 
                     pathName: "register"
                   ),
 
@@ -119,4 +138,72 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  Future logIn() async{
+    try {
+      bool submitSuccess = Validators.submit(
+        context: context,
+        formKey: formKey,
+      );
+    
+      if(submitSuccess){
+        setState(() {
+          loading = true;
+        });
+
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text.trim(), 
+          password: passwordController.text.trim(),
+        );
+
+        if(!mounted) return;
+        Navigator.pushReplacementNamed(context, '/start', arguments: {"name": "Postily"});
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Login Successful!"),
+            behavior: SnackBarBehavior.floating,
+          )
+        );
+
+        Validators.clearControllers( 
+          formKey: formKey,
+          controllers: [
+            emailController,
+            passwordController,
+          ]
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      print('-------------------------');
+      print(e);
+      print('-------------------------');
+
+      String message = "Login failed";
+      
+      if(e.code == "invalid-credential"){
+        message = "Invalid Credentials. Recheck your credentials.";
+      } else if(e.code == "too-many-requests"){
+        message = "Too many requests. Please try again later.";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(15.0)),
+          showCloseIcon: true,
+          duration: Duration(milliseconds: 2500),
+        ),
+      );
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+
+  IconData passwordVisibility (bool value) => value ? Icons.visibility : Icons.visibility_off;
 }

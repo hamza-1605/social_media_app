@@ -91,7 +91,7 @@ class _GoogleSigninState extends State<GoogleSignin> {
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 10.0,
           children: [
-            Image.asset("assets/images/google_logo.png" , width: 25),
+            Image.asset("assets/images/google_logo.png" , width: 20),
             Text("Continue with Google", style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface
             ),)

@@ -1,5 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_media_app/core/constants/app_colors.dart';
 import 'package:social_media_app/core/utils/validators.dart';
 import 'package:social_media_app/screens/authentication/widgets/clickable_rich_text.dart';
@@ -31,6 +31,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
   
   String gender = "";
   DateTime? selectedDate;
+
+  bool loading = false; 
+  bool showPassword = false;
+  bool showConfirmPassword = false;
 
   @override
   void dispose() {
@@ -111,6 +115,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     label: "Password*",
                     submit: () => FocusScope.of(context).requestFocus(rePasswordNode),
                     validator: (password) => Validators.passwordValidator(password),
+                    obscureText: !showPassword,
+                    suffixIcon: passwordVisibility( showPassword ),
+                    suffixPress: () => setState(() => showPassword = !showPassword),
                   ),
                   
                   // Re-enter password
@@ -124,6 +131,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         passwordController.text, 
                         rePassword
                       ),
+                    obscureText: !showConfirmPassword,
+                    suffixIcon: passwordVisibility( showConfirmPassword ),
+                    suffixPress: () => setState(() => showConfirmPassword = !showConfirmPassword),
                   ),      
 
                   // Gender - Dropdown List
@@ -172,31 +182,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   SizedBox(
                     width: double.maxFinite,
                     child: FilledButton(
-                      onPressed: () async {
-                        bool submitSuccess = Validators.submit(
-                          context: context,
-                          formKey: formKey,
-                          controllers: [
-                            emailController,
-                            firstnameController,
-                            lastnameController,
-                            passwordController,
-                            rePasswordController,
-                          ]
-                        );
-
-                        if(submitSuccess){
-                          Navigator.pushReplacementNamed(context, '/start');
-
-                          final SharedPreferences prefs = await SharedPreferences.getInstance();
-                          await prefs.setBool('login', true);
-                        }
-                      }, 
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: Text("Register", style: TextStyle(
-                          fontSize: 15,
-                        ),),
+                      onPressed: register,
+                      child: loading 
+                          ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
+                          : Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: Text("Register", style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
                       ),
                     ),
                   ),
@@ -232,6 +232,85 @@ class _RegistrationPageState extends State<RegistrationPage> {
       selectedDate = pickedDate;
     });
   }
+
+
+  Future register() async{
+    try {
+      bool submitSuccess = Validators.submit(
+        context: context,
+        formKey: formKey,
+      );
+    
+      if(submitSuccess){
+        setState(() {
+          loading = true;
+        });
+        
+        if(passwordController.text.trim() != rePasswordController.text.trim()){
+           ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Registration Successful!"),
+              behavior: SnackBarBehavior.floating,
+            )
+          );
+
+          return;
+        }
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text.trim(), 
+          password: passwordController.text.trim(),
+        );
+
+        if(!mounted) return;
+        Navigator.pushReplacementNamed(context, '/start', arguments: {"name": firstnameController.text.trim() });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Registration Successful!"),
+            behavior: SnackBarBehavior.floating,
+          )
+        );
+
+        Validators.clearControllers( 
+          formKey: formKey,
+          controllers: [
+            emailController,
+            firstnameController,
+            lastnameController,
+            passwordController,
+            rePasswordController,
+          ]
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      print('-------------------------');
+      print(e);
+      print('-------------------------');
+
+      String message = "Registration failed";
+      
+      if(e.code == "email-already-in-use"){
+        message = "This email is already in use.";
+      } 
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(15.0)),
+          showCloseIcon: true,
+          duration: Duration(milliseconds: 2500),
+        ),
+      );
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+  IconData passwordVisibility (bool value) => value ? Icons.visibility : Icons.visibility_off;
 }
 
 
