@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:social_media_app/core/constants/app_colors.dart';
 
 class NameAndAbout extends StatelessWidget {
-  const NameAndAbout({super.key});
+  const NameAndAbout({super.key, required this.email});
+  final String email;
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class NameAndAbout extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Hamza Sajid", 
+          Text( email, 
             style: TextStyle(
               fontSize: 18.0,
               fontWeight: FontWeight.w700

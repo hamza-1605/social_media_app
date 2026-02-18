@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:social_media_app/screens/profile/widgets/profile_appbar.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key, required this.username});
-  final String username;
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -25,8 +24,9 @@ class _ProfilePageState extends State<ProfilePage>
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            ProfileAppbar(username: widget.username,),
-        
+            ProfileAppbar(),
+
+            // images grid
             SliverPadding(
               padding: EdgeInsetsGeometry.symmetric(vertical: 10.0),
               sliver: SliverGrid(

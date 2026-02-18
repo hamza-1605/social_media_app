@@ -45,9 +45,7 @@ class _MyAppState extends State<MyApp> {
       themeMode: myThemeMode!,
       
       home: currentUser != null 
-          ?  BottomNav(
-            username: currentUser!.displayName ?? "Postily" ,
-          ) 
+          ? const BottomNav() 
           : const LoginPage(),
       
       onGenerateRoute: (settings) =>  AppRoutes.generateRoutes( settings , toggleTheme ) ,

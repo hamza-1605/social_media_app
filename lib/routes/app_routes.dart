@@ -18,8 +18,7 @@ class AppRoutes {
         return MaterialPageRoute(builder: (context) => RegistrationPage());
 
       case '/start':
-        final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(builder: (context) => BottomNav( username: args["name"] ));
+        return MaterialPageRoute(builder: (context) => BottomNav());
 
       case '/settings':
         return MaterialPageRoute(builder: (context) => SettingsPage(toggleTheme: toggleTheme));

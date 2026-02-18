@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import 'package:social_media_app/core/constants/app_colors.dart';
 import 'package:social_media_app/core/utils/validators.dart';
 import 'package:social_media_app/screens/authentication/widgets/clickable_rich_text.dart';
@@ -43,6 +45,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     lastnameController.dispose();
     passwordController.dispose();
     rePasswordController.dispose();
+    
     emailNode.dispose();
     firstnameNode.dispose();
     lastnameNode.dispose();
@@ -70,7 +73,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     child: AppnameText()
                   ),
                   
-                  // Heading
+                  // Heading/Welcome
                   HeadingText(heading: "Register", subheading: "Create a new account to join our community."),
 
                   // Email
@@ -245,25 +248,29 @@ class _RegistrationPageState extends State<RegistrationPage> {
         setState(() {
           loading = true;
         });
-        
-        if(passwordController.text.trim() != rePasswordController.text.trim()){
-           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Registration Successful!"),
-              behavior: SnackBarBehavior.floating,
-            )
-          );
 
-          return;
-        }
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        // creating a user with email
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text.trim(), 
           password: passwordController.text.trim(),
         );
 
+        // adding extra details of the user
+        await FirebaseFirestore.instance.collection('users')
+          .doc( userCredential.user!.uid)
+          .set({
+            "firstname" : firstnameController.text.trim(),
+            "lastname" : lastnameController.text.trim(),
+            "email" : emailController.text.trim(),
+            "dob" : selectedDate,
+            "gender" : gender,
+        });
+
+        // navigating to homepage
         if(!mounted) return;
         Navigator.pushReplacementNamed(context, '/start', arguments: {"name": firstnameController.text.trim() });
 
+        // Showing snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Registration Successful!"),
@@ -287,8 +294,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       print(e);
       print('-------------------------');
 
-      String message = "Registration failed";
-      
+      String message = "Registration failed";  
       if(e.code == "email-already-in-use"){
         message = "This email is already in use.";
       } 
@@ -309,6 +315,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       });
     }
   }
+
 
   IconData passwordVisibility (bool value) => value ? Icons.visibility : Icons.visibility_off;
 }
