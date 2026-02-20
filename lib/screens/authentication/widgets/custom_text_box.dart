@@ -11,7 +11,8 @@ class CustomTextBox extends StatelessWidget {
     required this.node,
     required this.submit,
     this.suffixIcon,
-    this.suffixPress
+    this.suffixPress,
+    this.keyboardType = TextInputType.text ,
   });
 
   final TextEditingController controller;
@@ -22,6 +23,7 @@ class CustomTextBox extends StatelessWidget {
   final String? Function(String?)? validator;
   final IconData? suffixIcon;
   final VoidCallback? suffixPress;
+  final TextInputType? keyboardType;
   
 
   @override
@@ -30,8 +32,9 @@ class CustomTextBox extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       focusNode: node,
+      keyboardType: keyboardType,
       onFieldSubmitted: (value) => submit() ,
-      onTapOutside: (event) => FocusScope.of(context).unfocus(),
+      // onTapOutside: (event) => FocusScope.of(context).unfocus(),
       decoration: InputDecoration(
         labelText: label,
         suffixIcon: suffixIcon != null 

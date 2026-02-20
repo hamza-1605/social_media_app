@@ -53,6 +53,19 @@ class _GoogleSigninState extends State<GoogleSignin> {
 
 
 
+  void printUserStatusAndNavigate(BuildContext context) async{
+    final userAuth = await googleSignIn();
+    if(userAuth != null){
+      print("User logged in as: ${userAuth.user?.displayName}");
+      
+      if(!context.mounted) return;
+      Navigator.pushReplacementNamed(context, '/start');
+    } else{
+      print("Sign-in interrupted!");
+    }
+  }
+
+
   Future<UserCredential?> googleSignIn() async {
     setState(() => isLoading = true);
     
@@ -90,17 +103,6 @@ class _GoogleSigninState extends State<GoogleSignin> {
   }
 
 
-  void printUserStatusAndNavigate(BuildContext context) async{
-    final userAuth = await googleSignIn();
-    if(userAuth != null){
-      print("User logged in as: ${userAuth.user?.displayName}");
-      if(!context.mounted) return;
-      Navigator.pushReplacementNamed(context, '/start');
-    } else{
-      print("Sign-in interrupted!");
-    }
-  }
-
 
   Future<void> createUserInFirestore(UserCredential userCredential) async{
     final user = userCredential.user;
@@ -113,12 +115,18 @@ class _GoogleSigninState extends State<GoogleSignin> {
 
     // execute only when user does not exits in firestore
     if( !userDoc.exists ){
+      String? userProfile = user.photoURL;
+
       await FirebaseFirestore.instance.collection('users')
         .doc( user.uid )
         .set({
           "firstname" : user.displayName?.split(" ").first ?? " ",
           "lastname" : user.displayName?.split(" ").last ?? " ",
           "email" : user.email,
+          "profilePic" : userProfile,
+          "userid" : user.uid,
+          "followers" : [],
+          "following" : []
         }); 
       print("New Google user saved to Firestore");
     } 

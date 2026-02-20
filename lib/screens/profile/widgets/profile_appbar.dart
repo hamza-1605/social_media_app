@@ -47,6 +47,7 @@ class _ProfileAppbarState extends State<ProfileAppbar> {
       title: FutureBuilder<Map<String, dynamic>?>(
         future: futureUser,
         builder: (context, snapshot) {
+          // Loader
           if (snapshot.connectionState == ConnectionState.waiting) {
             return SizedBox(
               height: 20,
@@ -58,10 +59,12 @@ class _ProfileAppbarState extends State<ProfileAppbar> {
             );
           }
 
+          // Data not found
           if (!snapshot.hasData || snapshot.data == null) {
             return Text("No Name");
           }
 
+          // returning name
           final data = snapshot.data!;
           final name = "${data["firstname"]} ${data["lastname"]}";
 

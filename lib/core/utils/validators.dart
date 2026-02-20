@@ -13,6 +13,15 @@ class Validators {
     }
   }
   
+  static String? loginEmailValidator(String? email) {
+    if(email == null || email.isEmpty){
+      return "Email can't be empty.";
+    }
+    else{
+      return null;
+    }
+  }
+  
 
   static String? passwordValidator(String? password) {
     if(password == null || password.isEmpty){

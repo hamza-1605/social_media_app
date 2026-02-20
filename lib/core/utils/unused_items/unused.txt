@@ -1,0 +1,91 @@
+//////// Registration Page ////////
+
+Future<void> selectDate() async {
+  final DateTime? pickedDate = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(1900),
+    lastDate: DateTime.now(),
+  );
+
+  setState(() {
+    selectedDate = pickedDate;
+  });
+}
+
+// Date Picker
+Row(
+  spacing: 20.0,
+  children: [
+    Text(
+      "Date of Birth: ",
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      ),
+    ), 
+    Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.middlewareGrey, width: 0.5),
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+      child: GestureDetector(
+        onTap: selectDate, 
+        child: Text(
+          selectedDate != null
+            ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'
+            : 'No date selected',
+          style: TextStyle(
+            fontSize: 16.0,
+            color: AppColors.middlewareGrey
+          ),
+        ),
+      ),
+    ),
+  ],
+),
+
+// Gender - Dropdown List
+SelectGender(
+  gender: gender, 
+  onGenderChange: (value) => setState(() {
+    gender = value;
+  })
+),
+
+
+// List<String> radioOptions = ["Male" , "Female" , "Not rather say"];
+// String currentRadio = "Male" ;
+
+// Gender - Radio Buttons
+// Column(
+//   crossAxisAlignment: CrossAxisAlignment.start,
+//   children: [
+//     Text(
+//       "Gender: ",
+//       style: TextStyle(
+//         fontSize: 16,
+//         fontWeight: FontWeight.w600,
+//         color: Colors.black87,
+//       ),
+//     ), 
+//     RadioGroup(
+//       groupValue: currentRadio,
+//       onChanged: (value) {
+//         setState(() {
+//           currentRadio = value!;
+//         });
+//       },
+//       child: Column(
+//         children: radioOptions.map( (option){
+//           return RadioListTile(
+//             activeColor: Colors.blueAccent,
+//             value: option,
+//             title: Text(option),
+//           );
+//         }).toList(),
+//       ),
+//     ),
+//   ],
+// ),

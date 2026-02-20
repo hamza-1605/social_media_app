@@ -60,9 +60,10 @@ class _LoginPageState extends State<LoginPage> {
                   CustomTextBox(
                     controller: emailController,
                     node: emailNode,
+                    keyboardType: TextInputType.emailAddress,
                     label: "Email",
                     submit: () => FocusScope.of(context).requestFocus(passwordNode),
-                    validator: (email) => Validators.emailValidator(email),
+                    validator: (email) => Validators.loginEmailValidator(email),
                   ),
 
                   // Password
@@ -138,6 +139,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
 
   Future logIn() async{
     try {
