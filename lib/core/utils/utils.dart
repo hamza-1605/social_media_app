@@ -14,6 +14,7 @@ void showSnackBar( BuildContext context, String content ){
   );
 }
 
+
 // ignore: strict_top_level_inference
 pickImage(ImageSource source) async{
   final ImagePicker imagePicker = ImagePicker();

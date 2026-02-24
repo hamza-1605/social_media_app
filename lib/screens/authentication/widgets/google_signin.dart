@@ -5,6 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:social_media_app/core/constants/app_colors.dart';
+import 'package:social_media_app/core/utils/utils.dart';
+import 'package:social_media_app/models/user.dart' as model;
+
 
 class GoogleSignin extends StatefulWidget {
   const GoogleSignin({super.key});
@@ -59,8 +62,10 @@ class _GoogleSigninState extends State<GoogleSignin> {
       print("User logged in as: ${userAuth.user?.displayName}");
       
       if(!context.mounted) return;
+      showSnackBar(context, "Login Successful!");
       Navigator.pushReplacementNamed(context, '/start');
-    } else{
+    } 
+    else{
       print("Sign-in interrupted!");
     }
   }
@@ -68,7 +73,6 @@ class _GoogleSigninState extends State<GoogleSignin> {
 
   Future<UserCredential?> googleSignIn() async {
     setState(() => isLoading = true);
-    
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -117,17 +121,20 @@ class _GoogleSigninState extends State<GoogleSignin> {
     if( !userDoc.exists ){
       String? userProfile = user.photoURL;
 
+      model.User newUser = model.User(
+        firstname: user.displayName?.split(" ").first ?? " ", 
+        lastname: user.displayName?.split(" ").last ?? " ", 
+        email: user.email!, 
+        userid: user.uid, 
+        followers: [], 
+        following: [],
+        photoUrl: userProfile,
+        bio: ""
+      );        
+
       await FirebaseFirestore.instance.collection('users')
         .doc( user.uid )
-        .set({
-          "firstname" : user.displayName?.split(" ").first ?? " ",
-          "lastname" : user.displayName?.split(" ").last ?? " ",
-          "email" : user.email,
-          "profilePic" : userProfile,
-          "userid" : user.uid,
-          "followers" : [],
-          "following" : []
-        }); 
+        .set( newUser.toJson() ); 
       print("New Google user saved to Firestore");
     } 
     else {

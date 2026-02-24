@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:social_media_app/core/resources/storage_methods.dart';
+import 'package:social_media_app/models/user.dart' as model;
 // import 'package:flutter/material.dart';
 // import 'package:firebase_core/firebase_core.dart';
 
@@ -26,22 +27,26 @@ class AuthMethods {
           password: password
         );
         
+        String userid = credentials.user!.uid;
         String? photoUrl;
         if( file != null ){
           photoUrl = await StorageMethods().uploadImageToCloudinary('profilePics', file, false);
         }
 
+        model.User newUser = model.User(
+          firstname: firstname, 
+          lastname: lastname, 
+          email: email, 
+          userid: userid, 
+          followers: [], 
+          following: [],
+          photoUrl: photoUrl,
+          bio: ""
+        );        
+
         await fireStore.collection('users')
           .doc( credentials.user!.uid )
-          .set({
-            "userid" : credentials.user!.uid,
-            "firstname" : firstname,
-            "lastname" : lastname,
-            "email" : email,
-            "profilePic": photoUrl,
-            "followers" : [],
-            "following" : [],
-        });
+          .set( newUser.toJson() );
 
         message = "Registration Successful!";
       }

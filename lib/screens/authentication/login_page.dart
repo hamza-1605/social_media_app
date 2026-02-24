@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/core/constants/app_colors.dart';
+import 'package:social_media_app/core/utils/utils.dart';
 import 'package:social_media_app/core/utils/validators.dart';
 import 'package:social_media_app/screens/authentication/widgets/clickable_rich_text.dart';
 import 'package:social_media_app/screens/authentication/widgets/custom_text_box.dart';
@@ -159,14 +160,9 @@ class _LoginPageState extends State<LoginPage> {
         );
 
         if(!mounted) return;
-        Navigator.pushReplacementNamed(context, '/start', arguments: {"name": "Postily"});
+        Navigator.pushReplacementNamed(context, '/start');
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Login Successful!"),
-            behavior: SnackBarBehavior.floating,
-          )
-        );
+        showSnackBar(context, "Login Successful!");
 
         Validators.clearControllers( 
           formKey: formKey,
