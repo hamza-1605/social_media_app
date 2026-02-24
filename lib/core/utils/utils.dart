@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
+// Custom Snackbar
 void showSnackBar( BuildContext context, String content ){
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -15,8 +17,9 @@ void showSnackBar( BuildContext context, String content ){
 }
 
 
+// Image picking function, returning in Uint8List form
 // ignore: strict_top_level_inference
-pickImage(ImageSource source) async{
+Future<Uint8List?> pickImage(ImageSource source) async{
   final ImagePicker imagePicker = ImagePicker();
 
   XFile? imageFile = await imagePicker.pickImage(source: source);
@@ -25,5 +28,6 @@ pickImage(ImageSource source) async{
   } 
   else{
     print("No pic selected");
+    return null;
   }
 }

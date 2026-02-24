@@ -89,3 +89,56 @@ SelectGender(
 //     ),
 //   ],
 // ),
+
+
+
+-------------------------------------------------------------------------------------------------------
+
+Future Builder in profile
+
+  // String name = "";
+  // late Future<Map<String, dynamic>?> futureUser;
+
+  // Future<Map<String, dynamic>?> getCurrentUserDetails() async{
+  //   // current user
+  //   user = FirebaseAuth.instance.currentUser;   // print("Auth user: $user");
+  //   if (user == null) return null;              // couldn't find user in firebaseAuth
+    
+  //   // getting the user from id, from the 'users' database  -> 
+  //   DocumentSnapshot dbUser = await FirebaseFirestore.instance.collection('users')
+  //     .doc(user!.uid)
+  //     .get();
+
+  //   return dbUser.data() as Map<String, dynamic>?;
+  // }
+
+  //  init => futureUser = getCurrentUserDetails();
+  
+
+
+
+      //  FutureBuilder<Map<String, dynamic>?>(
+      //   future: futureUser,
+      //   builder: (context, snapshot) {
+      //     // Loader
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return SizedBox(
+      //         height: 20,
+      //         width: 20,
+      //         child: CircularProgressIndicator(
+      //           color: AppColors.logoColor,
+      //           strokeWidth: 2,
+      //         ),
+      //       );
+      //     }
+
+      //     // Data not found
+      //     if (!snapshot.hasData || snapshot.data == null) {
+      //       return Text("No Name");
+      //     }
+
+          // returning name
+          // final data = snapshot.data!;
+          // final name = "${data["firstname"]} ${data["lastname"]}";
+
+          // return 

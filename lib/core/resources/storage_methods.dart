@@ -12,7 +12,7 @@ class StorageMethods {
 
   Future<String?> uploadImageToCloudinary(String folder, Uint8List image, bool isPost) async{
     try{
-      // authentiacating user
+      // authenticating user
       final user = auth.currentUser;
       if (user == null) {
         print("No authenticated user found");
@@ -25,7 +25,7 @@ class StorageMethods {
         fileBytes: image,
         resourceType: CloudinaryResourceType.image,
         folder: 'postily/users/${auth.currentUser!.uid}/$folder',
-        fileName: 'profile_${DateTime.now().millisecondsSinceEpoch}',
+        fileName: '${isPost ? "post" : "profile"}_${DateTime.now().millisecondsSinceEpoch}',
         progressCallback: (count, total) {
           print( 'Uploading progress: $count/$total' );
         }

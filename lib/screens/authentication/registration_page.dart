@@ -229,6 +229,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     });
   }
 
+
   Future register() async{
     try {
       bool submitSuccess = Validators.submit(

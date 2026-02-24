@@ -2,12 +2,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:social_media_app/core/providers/user_provider.dart';
 import 'package:social_media_app/core/theme/app_theme.dart';
 import 'package:social_media_app/core/utils/error_page.dart';
 import 'package:social_media_app/routes/app_routes.dart';
-import 'package:social_media_app/screens/authentication/login_page.dart';
 import 'package:social_media_app/widgets/common/appname_text.dart';
+import 'package:social_media_app/screens/authentication/login_page.dart';
 import 'package:social_media_app/widgets/specific/bottom_nav.dart';
 
 class MyApp extends StatefulWidget{
@@ -23,8 +25,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    initializePreferences();
     super.initState();
+    initializePreferences();
+    addData();
   }
 
 
@@ -39,14 +42,26 @@ class _MyAppState extends State<MyApp> {
     }
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Postily',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: myThemeMode!,
       
-      home: currentUser != null 
-          ? const BottomNav() 
-          : const LoginPage(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(), 
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          }
+
+          if(snapshot.hasData){
+            return BottomNav();
+          }
+
+          return LoginPage();
+        },
+      ),
       
       onGenerateRoute: (settings) =>  AppRoutes.generateRoutes( settings , toggleTheme ) ,
       onUnknownRoute: (settings) {
@@ -77,6 +92,12 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       myThemeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     });
+  }
+
+
+  Future<void> addData() async{
+    UserProvider userProvider = Provider.of(context, listen: false);
+    await userProvider.refreshUser();
   }
 
 }

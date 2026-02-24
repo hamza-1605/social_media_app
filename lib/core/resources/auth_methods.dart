@@ -11,6 +11,19 @@ class AuthMethods {
   final FirebaseAuth fireAuth = FirebaseAuth.instance;
   final FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
+  Future<model.User?> getUserDetails() async{
+    User? currentUser = fireAuth.currentUser ;
+    if(currentUser == null) return null;
+    
+    DocumentSnapshot snap = await fireStore.collection("users")
+                                           .doc( currentUser.uid )
+                                           .get();
+    if (!snap.exists) return null;  
+    
+    return model.User.fromSnapToUser(snap);
+  }
+
+
   Future<String> registerUser({
     required String firstname,
     required String lastname,
@@ -41,7 +54,7 @@ class AuthMethods {
           followers: [], 
           following: [],
           photoUrl: photoUrl,
-          bio: ""
+          bio: "",
         );        
 
         await fireStore.collection('users')
@@ -65,5 +78,15 @@ class AuthMethods {
     }
   }
 
+  
+  Future<void> loginCredentials({
+    required String email,
+    required String password,
+  }) async {
+    await fireAuth.signInWithEmailAndPassword(
+      email: email.trim(),
+      password: password.trim(),
+    );
+  }
 
 }

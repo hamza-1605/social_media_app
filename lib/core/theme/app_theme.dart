@@ -20,7 +20,7 @@ class AppTheme {
 
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: const Color.fromARGB(255, 241, 239, 239),
-      indicatorColor: Colors.blueAccent[100],
+      indicatorColor: Colors.transparent,
 
       iconTheme: WidgetStatePropertyAll( IconThemeData(
           color: Colors.black,
@@ -51,19 +51,19 @@ class AppTheme {
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.black,
       brightness: Brightness.dark,
-      surface: Colors.black,
+      surface: AppColors.darkBgColor,
       onPrimary: Colors.white
     ),
     
     appBarTheme: AppBarTheme(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.darkBgColor,
       foregroundColor: Colors.white,
       iconTheme: IconThemeData(color: Colors.white),
     ),
 
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: const Color.fromARGB(255, 20, 20, 20),
-      indicatorColor: Colors.blueAccent,
+      indicatorColor: Colors.transparent,
 
       iconTheme: WidgetStatePropertyAll( IconThemeData(
           color: Colors.white,

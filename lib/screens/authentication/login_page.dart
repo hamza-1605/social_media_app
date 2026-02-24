@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/core/constants/app_colors.dart';
+import 'package:social_media_app/core/resources/auth_methods.dart';
 import 'package:social_media_app/core/utils/utils.dart';
 import 'package:social_media_app/core/utils/validators.dart';
 import 'package:social_media_app/screens/authentication/widgets/clickable_rich_text.dart';
@@ -25,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   FocusNode passwordNode = FocusNode();
   bool loading = false;
   bool showPassword = false;
+  AuthMethods authMethods = AuthMethods();
 
   @override
   void dispose() {
@@ -142,6 +144,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 
+  
   Future logIn() async{
     try {
       bool submitSuccess = Validators.submit(
@@ -154,10 +157,7 @@ class _LoginPageState extends State<LoginPage> {
           loading = true;
         });
 
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text.trim(), 
-          password: passwordController.text.trim(),
-        );
+        authMethods.loginCredentials(email: emailController.text, password: passwordController.text);
 
         if(!mounted) return;
         Navigator.pushReplacementNamed(context, '/start');
@@ -185,20 +185,7 @@ class _LoginPageState extends State<LoginPage> {
         message = "Too many requests. Please try again later.";
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(15.0)),
-          showCloseIcon: true,
-          duration: Duration(milliseconds: 2500),
-        ),
-      );
-    } finally {
-      setState(() {
-        loading = false;
-      });
+      showSnackBar(context, message);
     }
   }
 

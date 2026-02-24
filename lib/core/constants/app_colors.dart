@@ -10,4 +10,6 @@ class AppColors {
  
   static const logoColor = Colors.blueAccent;
 
+  static const darkBgColor = Color.fromARGB(255, 15, 7, 31);
+
 }
