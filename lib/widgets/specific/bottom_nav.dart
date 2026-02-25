@@ -1,7 +1,7 @@
   import 'package:flutter/material.dart';
   import 'package:provider/provider.dart';
   import 'package:social_media_app/core/providers/user_provider.dart';
-  import 'package:social_media_app/screens/addPost/add_post.dart';
+  import 'package:social_media_app/screens/create/create_post.dart';
   import 'package:social_media_app/screens/home/home_page.dart';
   import 'package:social_media_app/screens/notifications/notifications_page.dart';
   import 'package:social_media_app/screens/profile/profile_page.dart';
@@ -32,7 +32,7 @@
         body: [
           HomePage(),
           SearchPage(),
-          AddPost(),
+          CreatePost(),
           NotificationsPage(),
           ProfilePage(),
         ][currentIndex],
@@ -49,33 +49,23 @@
             currentIndex = value;
           }),
           destinations: [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined, size: 35,),
-              selectedIcon: Icon(Icons.home, fontWeight: FontWeight.w700, size: 35,), 
-              label: "",
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.search, size: 35,), 
-              selectedIcon: Icon(Icons.search, fontWeight: FontWeight.w700, size: 35,), 
-              label: "",
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.add_circle_outline, size: 35,), 
-              selectedIcon: Icon(Icons.add_circle_outlined, fontWeight: FontWeight.w700, size: 35,), 
-              label: "",
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.notifications_outlined, size: 35,), 
-              selectedIcon: Icon(Icons.notifications, fontWeight: FontWeight.w700, size: 35,), 
-              label: "",
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline, size: 35,), 
-              selectedIcon: Icon(Icons.person, fontWeight: FontWeight.w700, size: 35,), 
-              label: "",
-            ),
+            naviDestination( Icons.home_outlined, Icons.home ),
+            naviDestination( Icons.search, Icons.search ),
+            naviDestination( Icons.add_circle_outline, Icons.add_circle_outlined ),
+            naviDestination( Icons.notifications_outlined, Icons.notifications ),
+            naviDestination( Icons.person_outline, Icons.person ),
           ] 
         ),
+      );
+    }
+
+
+
+    NavigationDestination naviDestination( IconData icon, IconData selectedIcon ) {
+      return NavigationDestination(
+        icon: Icon(icon, size: 35, fontWeight: FontWeight.w100,),
+        selectedIcon: Icon(selectedIcon, fontWeight: FontWeight.w700, size: 35,), 
+        label: "",
       );
     }
   }
