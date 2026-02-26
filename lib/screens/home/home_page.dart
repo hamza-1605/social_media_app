@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/screens/home/widgets/post_card.dart';
 import 'package:social_media_app/screens/home/widgets/stories_bar.dart';
@@ -19,18 +20,30 @@ class HomePage extends StatelessWidget {
           SliverToBoxAdapter(
             child: StoriesBar(),
           ),
-          SliverToBoxAdapter(
-            child: Column(
-              spacing: 10.0,
-              children: [
-                PostCard(),
-                PostCard(),
-                PostCard(),
-                PostCard(),
-                PostCard(),
-                PostCard(),
-              ],
-            ),
+          
+          StreamBuilder(
+            stream: FirebaseFirestore.instance.collection("posts").orderBy("datePublished", descending: true).snapshots() , 
+            builder: (context, snapshot) {
+              
+              if(snapshot.connectionState == ConnectionState.waiting){
+                return SliverToBoxAdapter(
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+              
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  childCount: snapshot.data!.docs.length,
+                  (context, index) {
+                    return PostCard(
+                      snap: snapshot.data!.docs[index].data(),
+                    );
+                  },
+                )
+              );
+            },
           ),
         ]
       ),

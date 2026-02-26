@@ -12,7 +12,7 @@ class IconAndNumbers extends StatelessWidget {
       spacing: 5,
       children: [
         Icon( icon ),
-        Text( amount , style: TextStyle(fontWeight: FontWeight.w600) ),
+        Text( int.tryParse(amount)==0 ? "" : amount, style: TextStyle(fontWeight: FontWeight.w600) ),
       ],
     );
   }

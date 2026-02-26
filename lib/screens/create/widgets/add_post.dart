@@ -169,7 +169,7 @@ class _AddPostState extends State<AddPost> {
                 )
                 : SizedBox.shrink(),
                 
-
+                // Caption/Text Area
                 SizedBox(
                   child: TextField(
                     onChanged: (value) => setState(() {}),
@@ -178,16 +178,23 @@ class _AddPostState extends State<AddPost> {
                       border: UnderlineInputBorder(),
                       hintText: selectedImage == null ? "Write your thoughts..." : "Add a caption..."
                     ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.deny( RegExp(r'\n{3,}') ),
+                    ],
                     minLines: 1,
                     maxLines: 8,
+                    maxLength: 500,
                   ),
                 ),
+
+                // Submit Button
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: FilledButton(
                     onPressed: isDisabled || isLoading
                       ? null
                       : () {
+                        FocusScope.of(context).unfocus();
                         uploadPost(
                           image: selectedImage,
                           userid: userProv!.userid,
