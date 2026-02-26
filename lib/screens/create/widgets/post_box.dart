@@ -1,6 +1,10 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:social_media_app/core/theme/app_fonts.dart';
+import 'package:social_media_app/core/utils/utils.dart';
 
 class PostBox extends StatelessWidget {
   const PostBox({super.key, required this.tag, required this.icondata, required this.textOnly});
@@ -11,8 +15,18 @@ class PostBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
-        Navigator.pushNamed(context, "/addpost", arguments: {"textOnly" : textOnly});
+      onTap: () async{
+        if(textOnly){
+          Navigator.pushNamed(context, "/addpost", arguments: {"image" : null});
+        }
+        else{
+          final Uint8List? image = await selectImageOptions(context);
+          if (!context.mounted) return;
+
+          if (image != null) {
+            Navigator.pushNamed( context, "/addpost", arguments: {"image": image} );
+          }
+        }
       },
       child: DottedBorder(
           options: RectDottedBorderOptions(

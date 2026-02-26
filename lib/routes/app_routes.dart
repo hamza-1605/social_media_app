@@ -30,7 +30,9 @@ class AppRoutes {
 
       case '/addpost':
         final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(builder: (context) => AddPost( textOnly: args["textOnly"],));
+        return MaterialPageRoute(builder: (context) => AddPost(
+          image: args['image']
+        ));
 
       case '/story':
         final args = settings.arguments as Map<String, dynamic>;

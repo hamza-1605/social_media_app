@@ -31,3 +31,82 @@ Future<Uint8List?> pickImage(ImageSource source) async{
     return null;
   }
 }
+
+
+// 'Select Image from' Dialog box
+Future<Uint8List?> selectImageOptions(BuildContext context){
+  return showDialog<Uint8List>(
+    context: context,
+    builder: (dialogContext){
+      return SimpleDialog(
+      contentPadding: EdgeInsetsGeometry.all(20.0),
+      title: Text("Upload an Image"),
+      children: [
+        DialogOption(
+          parentContext: dialogContext,
+          icondata: Icons.photo_outlined,
+          text: "Choose from Gallery",
+          onPress: () async{
+            Uint8List? imageFile = await pickImage( ImageSource.gallery );
+
+            if (!dialogContext.mounted) return;
+            Navigator.pop(dialogContext, imageFile);
+          },
+        ),
+
+        DialogOption(
+          parentContext: dialogContext,
+          icondata: Icons.camera_alt_outlined,
+          text: "Take Picture",
+          onPress: () async{
+            Uint8List? imageFile = await pickImage( ImageSource.camera );
+
+            if(!dialogContext.mounted) return;
+            Navigator.pop(dialogContext, imageFile);            
+          },
+        ),
+
+        DialogOption(
+          parentContext: dialogContext,
+          icondata: Icons.close,
+          text: "Cancel",
+          onPress: (){
+            Navigator.pop(dialogContext); 
+          },
+        ),
+      ],
+    );
+    },
+  );
+}
+
+
+
+
+class DialogOption extends StatelessWidget {
+  const DialogOption({
+    super.key, required this.parentContext, 
+    required this.text, required this.onPress,
+    required this.icondata, 
+  });
+  final BuildContext parentContext;
+  final String text;
+  final IconData icondata;
+  final VoidCallback onPress;
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialogOption(
+      onPressed: onPress,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        spacing: 20,
+        children: [
+          Icon(icondata),
+          Text(text),
+        ],
+      ),
+    );
+  }
+}

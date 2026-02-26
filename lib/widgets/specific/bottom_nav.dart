@@ -1,5 +1,6 @@
   import 'package:flutter/material.dart';
   import 'package:provider/provider.dart';
+import 'package:social_media_app/core/constants/app_colors.dart';
   import 'package:social_media_app/core/providers/user_provider.dart';
   import 'package:social_media_app/screens/create/create_post.dart';
   import 'package:social_media_app/screens/home/home_page.dart';
@@ -63,7 +64,7 @@
 
     NavigationDestination naviDestination( IconData icon, IconData selectedIcon ) {
       return NavigationDestination(
-        icon: Icon(icon, size: 35, fontWeight: FontWeight.w100,),
+        icon: Icon(icon, size: 35, fontWeight: FontWeight.w100, color: AppColors.lightGrey,),
         selectedIcon: Icon(selectedIcon, fontWeight: FontWeight.w700, size: 35,), 
         label: "",
       );

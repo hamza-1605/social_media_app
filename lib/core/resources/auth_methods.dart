@@ -43,7 +43,8 @@ class AuthMethods {
         String userid = credentials.user!.uid;
         String? photoUrl;
         if( file != null ){
-          photoUrl = await StorageMethods().uploadImageToCloudinary('profilePics', file, false);
+          photoUrl = await StorageMethods()
+                          .uploadImageToCloudinary(image: file, isPost: false);
         }
 
         model.User newUser = model.User(

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:cloudinary/cloudinary.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:uuid/uuid.dart';
 
 class StorageMethods {
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -10,7 +11,11 @@ class StorageMethods {
   );
 
 
-  Future<String?> uploadImageToCloudinary(String folder, Uint8List image, bool isPost) async{
+  Future<String?> uploadImageToCloudinary({
+     required Uint8List image, 
+     required bool isPost, 
+     String? fileName,
+    }) async{
     try{
       // authenticating user
       final user = auth.currentUser;
@@ -24,15 +29,17 @@ class StorageMethods {
         uploadPreset: 'ccwcyukj',
         fileBytes: image,
         resourceType: CloudinaryResourceType.image,
-        folder: 'postily/users/${auth.currentUser!.uid}/$folder',
-        fileName: '${isPost ? "post" : "profile"}_${DateTime.now().millisecondsSinceEpoch}',
+        folder: isPost ? 'postily/posts/${auth.currentUser!.uid}'
+                       : 'postily/profilePics',
+        fileName: fileName ?? ( isPost ? Uuid().v1()
+                                       : auth.currentUser!.uid ),
         progressCallback: (count, total) {
           print( 'Uploading progress: $count/$total' );
         }
       );
 
       if(response.isSuccessful) {
-        print('Get your image from with ${response.secureUrl}');
+        print('Get your image from ${response.secureUrl}');
         return response.secureUrl;
       } else {
         print("Upload failed: ${response.error}");

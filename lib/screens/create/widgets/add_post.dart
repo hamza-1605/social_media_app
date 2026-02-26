@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:social_media_app/core/constants/app_colors.dart';
+import 'package:social_media_app/core/providers/user_provider.dart';
+import 'package:social_media_app/core/resources/firestore_methods.dart';
+import 'package:social_media_app/core/utils/utils.dart';
 
 class AddPost extends StatefulWidget {
-  const AddPost({super.key, required this.textOnly, this.image});
+  const AddPost({super.key, required this.image});
   
-  final bool textOnly;
-  final String? image; 
+  final Uint8List? image;
 
   @override
   State<AddPost> createState() => _AddPostState();
@@ -13,6 +17,51 @@ class AddPost extends StatefulWidget {
 
 class _AddPostState extends State<AddPost> {
   TextEditingController textController = TextEditingController();
+  late Uint8List? selectedImage;
+  bool isLoading = false;
+
+  void uploadPost({
+    Uint8List? image,
+    required String userid,
+    required String firstname,
+    required String lastname,
+    required String? profileUrl,
+  }) async{
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      String res = await FirestoreMethods().uploadPost(
+        image: selectedImage, 
+        userid: userid, 
+        caption: textController.text.trim(), 
+        firstname: firstname, 
+        lastname: lastname, 
+        profileUrl: profileUrl,
+      );
+      print(res);
+      if(!mounted) return;
+      if(res == "success"){
+        print("res ----- Success");
+        showSnackBar(context, "Post Uploaded!");
+        Navigator.pop(context);
+      } else{
+        showSnackBar(context, res);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    selectedImage = widget.image;
+  }
 
   @override
   void dispose() {
@@ -22,6 +71,12 @@ class _AddPostState extends State<AddPost> {
 
   @override
   Widget build(BuildContext context) {
+    final userProv = Provider.of<UserProvider>(context).getUser;
+
+    final caption = textController.text.trim();
+    final isTextPost = selectedImage == null;
+    final isDisabled = isTextPost && caption.isEmpty;
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
@@ -29,13 +84,42 @@ class _AddPostState extends State<AddPost> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: widget.textOnly ? const Text("New Thought") : const Text("New Post"),
+          title: selectedImage == null ? const Text("New Thought") : const Text("New Post"),
           centerTitle: false,
           leading: IconButton(
-            onPressed: () => Navigator.pop(context), 
+            onPressed: () {
+              // DISCARD POST
+              if(selectedImage != null  ||  textController.text.isNotEmpty){
+                showDialog(context: context, builder: (context) {
+                  return AlertDialog(
+                    title: Text("Do you want to discard your post?"),
+                    actions: [
+                      TextButton(
+                        onPressed: (){
+                          Navigator.pop(context);
+                        }, 
+                        child: Text("No, wait")
+                      ),
+                      
+                      TextButton(
+                        onPressed: (){
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        }, 
+                        child: Text("Discard")
+                      ),
+                    ],
+                  );
+                },);
+              }
+              else{
+                Navigator.pop(context);
+              }
+            }, 
             icon: Icon(Icons.arrow_back)
           ),
         ),
+
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20.0),
@@ -44,7 +128,8 @@ class _AddPostState extends State<AddPost> {
               spacing: 20.0,
               children: [
                 
-                !widget.textOnly 
+                // show container if there is image
+                selectedImage != null
                 ? Container(
                   decoration: BoxDecoration(
                     border: BoxBorder.all(width: 1.0, color: AppColors.middlewareGrey),
@@ -57,9 +142,13 @@ class _AddPostState extends State<AddPost> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadiusGeometry.circular(12.0),
-                          child: Image.network(
-                            widget.image!,
-                            fit: BoxFit.contain,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: MemoryImage(selectedImage!),
+                                fit: BoxFit.contain
+                              ),
+                            ),
                           ),
                         ),
                   
@@ -70,7 +159,7 @@ class _AddPostState extends State<AddPost> {
                             style: IconButton.styleFrom(
                               backgroundColor: AppColors.buttonBlue,
                             ),
-                            onPressed: () {},
+                            onPressed: () => reselectImage(),
                             icon: const Icon(Icons.replay),
                           ),
                         ),
@@ -78,15 +167,16 @@ class _AddPostState extends State<AddPost> {
                     ),
                   ),
                 )
-                : SizedBox(),
+                : SizedBox.shrink(),
                 
+
                 SizedBox(
                   child: TextField(
                     onChanged: (value) => setState(() {}),
                     controller: textController,
                     decoration: InputDecoration( 
                       border: UnderlineInputBorder(),
-                      hintText: widget.textOnly ? "Write your thoughts..." : "Add a caption..."
+                      hintText: selectedImage == null ? "Write your thoughts..." : "Add a caption..."
                     ),
                     minLines: 1,
                     maxLines: 8,
@@ -95,16 +185,22 @@ class _AddPostState extends State<AddPost> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: FilledButton(
-                    onPressed: 
-                      widget.textOnly ? 
-                        textController.text.trim().isEmpty 
-                        ? null : (){
-                          // text post operation
-                        }
-                        : (){
-                          // image + caption operation
-                        }, 
-                    child: Text("POST")
+                    onPressed: isDisabled || isLoading
+                      ? null
+                      : () {
+                        uploadPost(
+                          image: selectedImage,
+                          userid: userProv!.userid,
+                          firstname: userProv.firstname,
+                          lastname: userProv.lastname,
+                          profileUrl: userProv.photoUrl,
+                        );
+                    }, 
+                    child: isLoading ? SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator()
+                    ) : Text("POST")
                   ),
                 ),
               ],
@@ -114,4 +210,18 @@ class _AddPostState extends State<AddPost> {
       ),
     );
   }
+
+
+
+  void reselectImage() async{
+
+    Uint8List? newImage = await selectImageOptions(context);
+
+    if (newImage != null) {
+      setState(() {
+        selectedImage = newImage;
+      });
+    }
+  }
+
 }
