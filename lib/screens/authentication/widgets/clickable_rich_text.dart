@@ -22,7 +22,7 @@ class ClickableRichText extends StatelessWidget {
             text: clickableText,
             style: TextStyle( fontSize: 14, fontWeight: FontWeight.w700, color: Colors.lightBlue),
             recognizer: TapGestureRecognizer()..onTap = (){
-              Navigator.pushNamed(context, '/$pathName');
+              Navigator.pushReplacementNamed(context, '/$pathName');
             }
           ),
         ],

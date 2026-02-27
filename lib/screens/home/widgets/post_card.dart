@@ -24,7 +24,7 @@ class _PostCardState extends State<PostCard>{
   Widget build(BuildContext context) {
     final userProv = Provider.of<UserProvider>(context);
     if (!userProv.isLoaded) {
-      return const Center(child: CircularProgressIndicator());
+      return const SizedBox.shrink();
     }
     
     final user = userProv.user;
@@ -43,7 +43,14 @@ class _PostCardState extends State<PostCard>{
               ? NetworkImage("https://static.thenounproject.com/png/5400099-200.png") 
               : null,
             child: widget.snap["profileUrl"] != null 
-              ? ClipOval(child: Image.network( widget.snap["profileUrl"] )) 
+              ? ClipOval(
+                child: Image.network( 
+                  widget.snap["profileUrl"],
+                  fit: BoxFit.cover,
+                  height: 44, 
+                  width: 44, 
+                  ),
+                )
               : null,
           ),
           title: Text('${widget.snap["firstname"]} ${widget.snap["lastname"]}', style: TextStyle(fontWeight: FontWeight.w600),),

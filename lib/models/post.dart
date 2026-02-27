@@ -50,7 +50,7 @@ class Post{
       postid : snap["postid"], 
       userid : snap["userid"], 
       caption : snap["caption"], 
-      likes : snap["likes"],
+      likes : List<String>.from(snap["likes"]),
       datePublished : snap["datePublished"], 
       postUrl : snap["postUrl"], 
       profileUrl : snap["profileUrl"]

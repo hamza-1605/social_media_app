@@ -134,6 +134,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             child: CustomTextBox(
                               controller: firstnameController,
                               node: firstnameNode,
+                              textCapitalization: TextCapitalization.words,
                               label: "First Name*",
                               submit: () => FocusScope.of(context).requestFocus(lastnameNode),
                               validator: (fname) => Validators.nameValidator(fname),
@@ -143,6 +144,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             child: CustomTextBox(
                               controller: lastnameController,
                               node: lastnameNode,
+                              textCapitalization: TextCapitalization.words,
                               label: "Last Name*",
                               submit: () => FocusScope.of(context).requestFocus(passwordNode),
                               validator: (lname) => Validators.nameValidator(lname),
@@ -186,19 +188,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         child: FilledButton(
                           onPressed: register,
                           child: loading 
-                              ? SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                ),
-                              )
-                              : Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                                child: Text("Register", style: TextStyle(
-                                  fontSize: 15,
-                                ),
+                            ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
                               ),
+                            )
+                            : Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10.0),
+                              child: Text("Register", style: TextStyle(
+                                fontSize: 15,
+                              ),
+                            ),
                           ),
                         ),
                       ),

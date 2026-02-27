@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
     if (myThemeMode == null) {
       return const MaterialApp(
         home: Scaffold(
-          body: Center(child: Center(child: AppnameText(),)),
+          body: Center(child: AppnameText(),),
         ),
       );
     }
@@ -50,6 +50,9 @@ class _MyAppState extends State<MyApp> {
         builder: (context, snapshot) {
           if(snapshot.connectionState == ConnectionState.waiting){
             return const Scaffold(body: Center(child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 20.0,
               children: [
                 AppnameText(),
                 CircularProgressIndicator(),

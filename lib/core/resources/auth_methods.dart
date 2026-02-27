@@ -78,14 +78,31 @@ class AuthMethods {
   }
 
   
-  Future<void> loginCredentials({
+  Future<String> loginCredentials({
     required String email,
     required String password,
   }) async {
-    await fireAuth.signInWithEmailAndPassword(
-      email: email.trim(),
-      password: password.trim(),
-    );
+    String message = "Login Failed";
+    try{
+      if(email.trim().isNotEmpty && password.trim().isNotEmpty){
+
+        await fireAuth.signInWithEmailAndPassword(
+          email: email.trim(),
+          password: password.trim(),
+        );
+        message = "Login Successful!";
+      }
+      return message;
+    } on FirebaseAuthException catch (e) {
+      print('-------------------------');
+      print(e);
+      print('-------------------------');
+
+      if(e.code == "invalid-credential"){
+        message = "Check your credentials again.";
+      }
+      return message ;
+    }
   }
 
 }

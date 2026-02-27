@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/core/constants/app_colors.dart';
 import 'package:social_media_app/core/resources/auth_methods.dart';
@@ -157,12 +156,19 @@ class _LoginPageState extends State<LoginPage> {
           loading = true;
         });
 
-        authMethods.loginCredentials(email: emailController.text, password: passwordController.text);
+        String message = await authMethods.loginCredentials(
+          email: emailController.text, 
+          password: passwordController.text
+        );
 
         if(!mounted) return;
-        Navigator.pushReplacementNamed(context, '/start');
+        if(message == "Login Successful!"){
+          Navigator.pushReplacementNamed(context, '/start');
+          return;
+        }
+        
+        showSnackBar(context, message);
 
-        showSnackBar(context, "Login Successful!");
 
         Validators.clearControllers( 
           formKey: formKey,
@@ -172,20 +178,13 @@ class _LoginPageState extends State<LoginPage> {
           ]
         );
       }
-    } on FirebaseAuthException catch (e) {
-      print('-------------------------');
-      print(e);
-      print('-------------------------');
-
-      String message = "Login failed";
-      
-      if(e.code == "invalid-credential"){
-        message = "Invalid Credentials. Recheck your credentials.";
-      } else if(e.code == "too-many-requests"){
-        message = "Too many requests. Please try again later.";
-      }
-
+    } catch(e) {
+      String message = e.toString();
       showSnackBar(context, message);
+    } finally {
+      setState(() {
+        loading = false;
+      });
     }
   }
 

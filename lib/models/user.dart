@@ -45,8 +45,8 @@ class User{
       lastname: snap["lastname"], 
       email: snap["email"], 
       userid: snap["userid"], 
-      followers: snap["followers"], 
-      following: snap["following"],
+      followers: List<String>.from(snap["followers"]), 
+      following: List<String>.from(snap["following"]),
       // bio: snap["bio"],
       photoUrl: snap["photoUrl"]
     );
