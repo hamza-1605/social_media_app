@@ -22,10 +22,14 @@ class _PostCardState extends State<PostCard>{
 
   @override
   Widget build(BuildContext context) {
-    final User? userProv = Provider.of<UserProvider>(context).getUser;
-    if (userProv == null) {
+    final userProv = Provider.of<UserProvider>(context);
+    if (!userProv.isLoaded) {
       return const Center(child: CircularProgressIndicator());
     }
+    
+    final user = userProv.user;
+
+    final uniqueId = widget.snap["email"].toString().split('@')[0];
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,32 +59,19 @@ class _PostCardState extends State<PostCard>{
               alignment: Alignment.center,
               children: [
                 GestureDetector(
-                  onDoubleTap: () async{
-                    setState(() {
-                      animationStart = true;
-                    });
-                    Timer(
-                      Duration(milliseconds: 800), 
-                      (){
-                        if (!mounted) return;
-                        setState(() {
-                          animationStart = false;  
-                        });
-                      }
-                    );
-                    await FirestoreMethods().likePost(
-                      userProv.userid, widget.snap["likes"], widget.snap["postid"]
-                    );
-                  },
+                  onDoubleTap: () => likeAction( user ),
                   child: Image.network(
                     widget.snap["postUrl"] ,
                     fit: BoxFit.contain,
                   ),
                 ),
-                AnimatedOpacity(
-                  opacity: animationStart ? 1 : 0, 
-                  duration: Duration(milliseconds: 250),
-                  child: Icon(Icons.favorite, size: 100),
+                GestureDetector(
+                  onDoubleTap: () => likeAction( user ),
+                  child: AnimatedOpacity(
+                    opacity: animationStart ? 1 : 0, 
+                    duration: Duration(milliseconds: 250),
+                    child: Icon(Icons.favorite, size: 100, color: Theme.of(context).scaffoldBackgroundColor),
+                  ),
                 ),
               ],
             ),
@@ -119,12 +110,12 @@ class _PostCardState extends State<PostCard>{
                     GestureDetector(
                       onTap: () async{
                         await FirestoreMethods().likePost(
-                          userProv.userid, widget.snap["likes"], widget.snap["postid"]
+                          user.userid, widget.snap["likes"], widget.snap["postid"]
                         );
                       },
                       child: IconAndNumbers(
                         amount: widget.snap["likes"].length.toString(), 
-                        icon: widget.snap["likes"].contains(userProv.userid) 
+                        icon: widget.snap["likes"].contains(user.userid) 
                               ?   Icon(Icons.favorite, color: Colors.red)
                               :   Icon(Icons.favorite_border),
                       ),
@@ -157,7 +148,7 @@ class _PostCardState extends State<PostCard>{
               // id & caption
               RichText(
                 text: TextSpan(
-                  text:  widget.snap["postUrl"] != null ? "h.s_1605\t\t" : "h.s_1605\tshared a thought!",
+                  text:  widget.snap["postUrl"] != null ? "$uniqueId\t\t" : "$uniqueId\tshared a thought!",
                   children: widget.snap["postUrl"] != null ? [
                     TextSpan(
                       text: widget.snap["caption"],
@@ -191,4 +182,25 @@ class _PostCardState extends State<PostCard>{
       ],
     );
   }
+
+
+
+  void likeAction(User user) async{
+    setState(() {
+      animationStart = true;
+    });
+    Timer(
+      Duration(milliseconds: 800), 
+      (){
+        if (!mounted) return;
+        setState(() {
+          animationStart = false;  
+        });
+      }
+    );
+    await FirestoreMethods().likePost(
+      user.userid, widget.snap["likes"], widget.snap["postid"]
+    );
+  }
+
 }

@@ -26,6 +26,7 @@ class _AddPostState extends State<AddPost> {
     required String firstname,
     required String lastname,
     required String? profileUrl,
+    required String email,
   }) async{
     try {
       setState(() {
@@ -37,6 +38,7 @@ class _AddPostState extends State<AddPost> {
         caption: textController.text.trim(), 
         firstname: firstname, 
         lastname: lastname, 
+        email: email,
         profileUrl: profileUrl,
       );
       print(res);
@@ -71,10 +73,12 @@ class _AddPostState extends State<AddPost> {
 
   @override
   Widget build(BuildContext context) {
-    final userProv = Provider.of<UserProvider>(context).getUser;
-    if (userProv == null) {
+    final userProv = Provider.of<UserProvider>(context);
+    if (!userProv.isLoaded) {
       return const Center(child: CircularProgressIndicator());
-    } 
+    }
+    
+    final user = userProv.user;
     
     final caption = textController.text.trim();
     final isTextPost = selectedImage == null;
@@ -200,10 +204,11 @@ class _AddPostState extends State<AddPost> {
                         FocusScope.of(context).unfocus();
                         uploadPost(
                           image: selectedImage,
-                          userid: userProv.userid,
-                          firstname: userProv.firstname,
-                          lastname: userProv.lastname,
-                          profileUrl: userProv.photoUrl,
+                          userid: user.userid,
+                          firstname: user.firstname,
+                          lastname: user.lastname,
+                          profileUrl: user.photoUrl,
+                          email: user.email,
                         );
                     }, 
                     child: isLoading ? SizedBox(

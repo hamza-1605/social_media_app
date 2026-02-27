@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:social_media_app/core/constants/app_colors.dart';
 import 'package:social_media_app/core/providers/user_provider.dart';
-import 'package:social_media_app/models/user.dart' as model;
 import 'package:social_media_app/screens/profile/widgets/follow_buttons_row.dart';
 import 'package:social_media_app/screens/profile/widgets/header_row.dart';
 import 'package:social_media_app/screens/profile/widgets/name_and_about.dart';
@@ -18,22 +17,17 @@ class ProfileAppbar extends StatefulWidget {
 
 class _ProfileAppbarState extends State<ProfileAppbar> {
   User? user;
-  
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    final model.User? user = userProvider.getUser;
-    if (user == null) {
+    if(!userProvider.isLoaded){
       return SliverToBoxAdapter(child: const Center(
         child: CircularProgressIndicator()
       ));
     }
+
+    final user = userProvider.user;
 
     return SliverAppBar(      
       title: Text(

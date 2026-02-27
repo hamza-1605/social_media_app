@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Post{
   final String firstname;
   final String lastname;
+  final String email;
   final String userid;
   final String postid;
   final String caption;
@@ -15,6 +16,7 @@ class Post{
   Post({
     required this.firstname, 
     required this.lastname, 
+    required this.email,
     required this.postid, 
     required this.userid, 
     required this.caption, 
@@ -28,6 +30,7 @@ class Post{
   Map<String, dynamic> toJson () => {
     "firstname" : firstname, 
     "lastname" : lastname, 
+    "email": email,
     "postid" : postid, 
     "userid" : userid, 
     "caption" : caption, 
@@ -43,6 +46,7 @@ class Post{
     return Post(
       firstname : snap["firstname"], 
       lastname : snap["lastname"], 
+      email: snap["email"],
       postid : snap["postid"], 
       userid : snap["userid"], 
       caption : snap["caption"], 

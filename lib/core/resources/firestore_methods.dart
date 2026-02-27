@@ -15,6 +15,7 @@ class FirestoreMethods {
     required String caption,
     required String firstname,
     required String lastname,
+    required String email,
   }) async{
     String res = "Some error occured";
     try {
@@ -28,7 +29,8 @@ class FirestoreMethods {
 
       Post post = Post(
         firstname: firstname, 
-        lastname: lastname, 
+        lastname: lastname,
+        email: email, 
         postid: postid, 
         userid: userid, 
         caption: caption, 
