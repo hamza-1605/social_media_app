@@ -29,14 +29,13 @@ class _ProfileAppbarState extends State<ProfileAppbar> {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final model.User? user = userProvider.getUser;
-
     if (user == null) {
-      return const SliverToBoxAdapter(
-        child: Center(child: CircularProgressIndicator()),
-      );
+      return SliverToBoxAdapter(child: const Center(
+        child: CircularProgressIndicator()
+      ));
     }
-    return SliverAppBar(
-      
+
+    return SliverAppBar(      
       title: Text(
         '${user.firstname} ${user.lastname}',
         style: TextStyle(fontWeight: FontWeight.w700),

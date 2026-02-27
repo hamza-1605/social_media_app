@@ -18,8 +18,6 @@ class AuthMethods {
     DocumentSnapshot snap = await fireStore.collection("users")
                                            .doc( currentUser.uid )
                                            .get();
-    if (!snap.exists) return null;  
-    
     return model.User.fromSnapToUser(snap);
   }
 

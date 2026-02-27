@@ -116,7 +116,6 @@ class DialogOption extends StatelessWidget {
 double getFontSize(String text) {
   final length = text.length;
 
-  if (length < 40) return 32;
   if (length < 80) return 26;
   if (length < 150) return 22;
   if (length < 250) return 18;

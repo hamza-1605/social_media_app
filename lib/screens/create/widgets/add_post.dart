@@ -72,7 +72,10 @@ class _AddPostState extends State<AddPost> {
   @override
   Widget build(BuildContext context) {
     final userProv = Provider.of<UserProvider>(context).getUser;
-
+    if (userProv == null) {
+      return const Center(child: CircularProgressIndicator());
+    } 
+    
     final caption = textController.text.trim();
     final isTextPost = selectedImage == null;
     final isDisabled = isTextPost && caption.isEmpty;
@@ -197,7 +200,7 @@ class _AddPostState extends State<AddPost> {
                         FocusScope.of(context).unfocus();
                         uploadPost(
                           image: selectedImage,
-                          userid: userProv!.userid,
+                          userid: userProv.userid,
                           firstname: userProv.firstname,
                           lastname: userProv.lastname,
                           profileUrl: userProv.photoUrl,

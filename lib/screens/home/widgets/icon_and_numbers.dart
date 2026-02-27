@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class IconAndNumbers extends StatelessWidget {
   const IconAndNumbers({super.key, required this.amount, required this.icon});
   final String amount;
-  final IconData icon;
+  final Icon icon;
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class IconAndNumbers extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       spacing: 5,
       children: [
-        Icon( icon ),
+        icon,
         Text( int.tryParse(amount)==0 ? "" : amount, style: TextStyle(fontWeight: FontWeight.w600) ),
       ],
     );

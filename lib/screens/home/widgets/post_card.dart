@@ -1,15 +1,32 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:social_media_app/core/providers/user_provider.dart';
+import 'package:social_media_app/core/resources/firestore_methods.dart';
 import 'package:social_media_app/core/utils/utils.dart';
+import 'package:social_media_app/models/user.dart';
 import 'package:social_media_app/screens/home/widgets/comments_section.dart';
 import 'package:social_media_app/screens/home/widgets/icon_and_numbers.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   const PostCard({super.key, required this.snap});
   final Map<String, dynamic> snap;
 
   @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard>{
+  bool animationStart = false;
+
+  @override
   Widget build(BuildContext context) {
+    final User? userProv = Provider.of<UserProvider>(context).getUser;
+    if (userProv == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -18,39 +35,74 @@ class PostCard extends StatelessWidget {
         ListTile(
           leading: CircleAvatar( 
             radius: 22,
-            backgroundImage: snap["profileUrl"] ?? NetworkImage("https://static.thenounproject.com/png/5400099-200.png"), 
+            backgroundImage: widget.snap["profileUrl"] == null 
+              ? NetworkImage("https://static.thenounproject.com/png/5400099-200.png") 
+              : null,
+            child: widget.snap["profileUrl"] != null 
+              ? ClipOval(child: Image.network( widget.snap["profileUrl"] )) 
+              : null,
           ),
-          title: Text('${snap["firstname"]} ${snap["lastname"]}', style: TextStyle(fontWeight: FontWeight.w600),),
-          subtitle: Text("Kashmir, Pakistan"),
+          title: Text('${widget.snap["firstname"]} ${widget.snap["lastname"]}', style: TextStyle(fontWeight: FontWeight.w600),),
           trailing: Text("1h"),
         ),
     
-        // Image/post
-        snap["postUrl"] != null
+        // Post Image
+        widget.snap["postUrl"] != null
         ? AspectRatio(
           aspectRatio: 1,
           child:
-            Image.network(
-                snap["postUrl"] ,
-                fit: BoxFit.contain,
-              ),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                GestureDetector(
+                  onDoubleTap: () async{
+                    setState(() {
+                      animationStart = true;
+                    });
+                    Timer(
+                      Duration(milliseconds: 800), 
+                      (){
+                        if (!mounted) return;
+                        setState(() {
+                          animationStart = false;  
+                        });
+                      }
+                    );
+                    await FirestoreMethods().likePost(
+                      userProv.userid, widget.snap["likes"], widget.snap["postid"]
+                    );
+                  },
+                  child: Image.network(
+                    widget.snap["postUrl"] ,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                AnimatedOpacity(
+                  opacity: animationStart ? 1 : 0, 
+                  duration: Duration(milliseconds: 250),
+                  child: Icon(Icons.favorite, size: 100),
+                ),
+              ],
+            ),
             )
+        // If only text-based Post
         : Center(
           child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: Text(
-              snap["caption"],
+              widget.snap["caption"],
               maxLines: 8,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: getFontSize( snap["caption"] ),
+                fontSize: getFontSize( widget.snap["caption"] ),
                 fontWeight: FontWeight.w600
               ),
               textAlign: TextAlign.center,
             ),
           )
         ),
-    
+
+        // Bottom Row for buttons
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Column(
@@ -63,7 +115,22 @@ class PostCard extends StatelessWidget {
                 child: Row(
                   spacing: 20.0,
                   children: [
-                    IconAndNumbers(amount: snap["likes"].toString(), icon: Icons.favorite_border),
+                    // Like button
+                    GestureDetector(
+                      onTap: () async{
+                        await FirestoreMethods().likePost(
+                          userProv.userid, widget.snap["likes"], widget.snap["postid"]
+                        );
+                      },
+                      child: IconAndNumbers(
+                        amount: widget.snap["likes"].length.toString(), 
+                        icon: widget.snap["likes"].contains(userProv.userid) 
+                              ?   Icon(Icons.favorite, color: Colors.red)
+                              :   Icon(Icons.favorite_border),
+                      ),
+                    ),
+                    
+                    // Comments Button + Open Section
                     GestureDetector(
                       onTap: (){
                         showModalBottomSheet(
@@ -79,10 +146,10 @@ class PostCard extends StatelessWidget {
                       },
                       child: IconAndNumbers(
                         amount: "12", 
-                        icon: Icons.chat_bubble_outline
+                        icon: Icon(Icons.chat_bubble_outline)
                       )
                     ),
-                    IconAndNumbers(amount: "", icon: Icons.send_outlined),
+                    IconAndNumbers(amount: "", icon: Icon(Icons.send_outlined)),
                   ],
                 ),
               ),
@@ -90,10 +157,10 @@ class PostCard extends StatelessWidget {
               // id & caption
               RichText(
                 text: TextSpan(
-                  text:  snap["postUrl"] != null ? "h.s_1605\t\t" : "h.s_1605\tshared a thought!",
-                  children: snap["postUrl"] != null ? [
+                  text:  widget.snap["postUrl"] != null ? "h.s_1605\t\t" : "h.s_1605\tshared a thought!",
+                  children: widget.snap["postUrl"] != null ? [
                     TextSpan(
-                      text: snap["caption"],
+                      text: widget.snap["caption"],
                       style: TextStyle(fontWeight: FontWeight.w500)
                     ),
                   ] : [],
@@ -114,7 +181,7 @@ class PostCard extends StatelessWidget {
                 opacity: 0.5,
                 child: Text( 
                   DateFormat.yMMMMd().format( 
-                    snap["datePublished"].toDate() 
+                    widget.snap["datePublished"].toDate() 
                   ) 
                 ),
               ),

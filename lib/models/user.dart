@@ -28,21 +28,27 @@ class User{
     "lastname" : lastname, 
     "email" : email, 
     "userid" : userid, 
-    "bio" : bio, 
+    // "bio" : bio,
+    "photoUrl" : photoUrl,
     "followers" : followers, 
     "following" : following, 
   };
 
 
-  static User fromSnapToUser(DocumentSnapshot snapshot) {
-    var snap = snapshot.data() as Map<String, dynamic> ;
+  static User? fromSnapToUser(DocumentSnapshot snapshot) {
+    final data = snapshot.data();
+    if (data == null) return null;
+  
+    final snap = snapshot.data() as Map<String, dynamic> ;
     return User(
       firstname: snap["firstname"] , 
       lastname: snap["lastname"], 
       email: snap["email"], 
       userid: snap["userid"], 
       followers: snap["followers"], 
-      following: snap["following"]
+      following: snap["following"],
+      // bio: snap["bio"],
+      photoUrl: snap["photoUrl"]
     );
   }
 

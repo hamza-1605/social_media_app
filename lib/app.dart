@@ -2,9 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:social_media_app/core/providers/user_provider.dart';
 import 'package:social_media_app/core/theme/app_theme.dart';
 import 'package:social_media_app/core/utils/error_page.dart';
 import 'package:social_media_app/routes/app_routes.dart';
@@ -27,7 +25,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initializePreferences();
-    addData();
   }
 
 
@@ -52,7 +49,12 @@ class _MyAppState extends State<MyApp> {
         stream: FirebaseAuth.instance.authStateChanges(), 
         builder: (context, snapshot) {
           if(snapshot.connectionState == ConnectionState.waiting){
-            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            return const Scaffold(body: Center(child: Column(
+              children: [
+                AppnameText(),
+                CircularProgressIndicator(),
+              ],
+            )));
           }
 
           if(snapshot.hasData){
@@ -92,12 +94,6 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       myThemeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     });
-  }
-
-
-  Future<void> addData() async{
-    UserProvider userProvider = Provider.of(context, listen: false);
-    await userProvider.refreshUser();
   }
 
 }
