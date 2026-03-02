@@ -93,6 +93,7 @@ class _AddPostState extends State<AddPost> {
         appBar: AppBar(
           title: selectedImage == null ? const Text("New Thought") : const Text("New Post"),
           centerTitle: false,
+          forceMaterialTransparency: true,
           leading: IconButton(
             onPressed: () {
               // DISCARD POST

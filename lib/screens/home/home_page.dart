@@ -32,17 +32,22 @@ class HomePage extends StatelessWidget {
                   ),
                 );
               }
-              
-              return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  childCount: snapshot.data!.docs.length,
-                  (context, index) {
-                    return PostCard(
-                      snap: snapshot.data!.docs[index].data(),
-                    );
-                  },
-                )
-              );
+
+              if(snapshot.hasData){
+                if(snapshot.data!.docs.isEmpty) return SliverToBoxAdapter(child: Center(child: Text("No posts to show.")));
+
+                return SliverList.separated(
+                  separatorBuilder: (context, index) => SizedBox(height: 10.0),
+                  itemCount : snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                      return PostCard(
+                        snap: snapshot.data!.docs[index].data(),
+                      );
+                  }, 
+                );
+              }
+
+              return SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
             },
           ),
         ]

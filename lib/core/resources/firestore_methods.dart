@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:social_media_app/core/resources/storage_methods.dart';
 import 'package:social_media_app/models/post.dart';
+import 'package:social_media_app/models/user.dart';
 import 'package:uuid/uuid.dart';
 
 class FirestoreMethods {
@@ -61,6 +62,45 @@ class FirestoreMethods {
       }
       else{
         await firestore.collection("posts").doc(postId).update({
+          "likes" : FieldValue.arrayUnion([uid])
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+
+  Future<void> postComment( String postId, User commentator, String text ) async{
+    try {
+      String commentId = const Uuid().v1();
+
+      await firestore.collection('posts').doc(postId).collection('comments').doc(commentId).set({
+        "postId" : postId,
+        "commentText" : text,
+        "username" : commentator.email.split('@').first,
+        "photoUrl" : commentator.photoUrl,
+        "datePublished" : DateTime.now(),
+        "likes" : []
+      });
+
+      print("Firebase saved comment successfully");
+
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+
+  Future<void> likeComment( String uid, List likes, String postId, String commentId ) async{
+    try {
+      if( likes.contains(uid) ){
+        await firestore.collection("posts").doc(postId).collection('comments').doc(commentId).update({
+          "likes" : FieldValue.arrayRemove([uid])
+        });
+      }
+      else{
+        await firestore.collection("posts").doc(postId).collection('comments').doc(commentId).update({
           "likes" : FieldValue.arrayUnion([uid])
         });
       }

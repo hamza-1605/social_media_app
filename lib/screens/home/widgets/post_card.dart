@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:social_media_app/core/constants/links.dart';
 import 'package:social_media_app/core/providers/user_provider.dart';
 import 'package:social_media_app/core/resources/firestore_methods.dart';
 import 'package:social_media_app/core/utils/utils.dart';
@@ -19,17 +21,32 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard>{
   bool animationStart = false;
+  int commentsCount = 0;
+
+  Future<void> getComments() async{
+    QuerySnapshot commentSnap = await FirebaseFirestore.instance.collection('posts').doc(widget.snap['postid']).collection('comments').get();
+    commentsCount = commentSnap.docs.length;
+    print('----------------------- No. of comments:  $commentsCount');
+    if(!mounted) return;
+    setState(() {});
+  }
+  
+  @override
+  void initState(){
+    super.initState();
+    getComments();
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     final userProv = Provider.of<UserProvider>(context);
     if (!userProv.isLoaded) {
       return const SizedBox.shrink();
     }
     
     final user = userProv.user;
-
     final uniqueId = widget.snap["email"].toString().split('@')[0];
+
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +57,7 @@ class _PostCardState extends State<PostCard>{
           leading: CircleAvatar( 
             radius: 22,
             backgroundImage: widget.snap["profileUrl"] == null 
-              ? NetworkImage("https://static.thenounproject.com/png/5400099-200.png") 
+              ? NetworkImage( Links().genericUser ) 
               : null,
             child: widget.snap["profileUrl"] != null 
               ? ClipOval(
@@ -139,11 +156,13 @@ class _PostCardState extends State<PostCard>{
                           isScrollControlled: true,
           
                           context: context,
-                          builder: (context) => CommentsSection(),
+                          builder: (context) => CommentsSection(
+                            postId: widget.snap['postid']
+                          ),
                         );
                       },
                       child: IconAndNumbers(
-                        amount: "12", 
+                        amount: commentsCount.toString() , 
                         icon: Icon(Icons.chat_bubble_outline)
                       )
                     ),
@@ -168,13 +187,30 @@ class _PostCardState extends State<PostCard>{
                   ),
                 )
               ),
-              InkWell(
-                onTap: () {},
+
+              // view all comments
+              commentsCount != 0 ? InkWell(
+                onTap: () {
+                  showModalBottomSheet(
+                    isDismissible: true,
+                    useSafeArea: false,
+                    showDragHandle: true,
+                    enableDrag: true,
+                    isScrollControlled: true,
+    
+                    context: context,
+                    builder: (context) => CommentsSection(
+                      postId: widget.snap['postid']
+                    ),
+                  );
+                },
                 child: Opacity(
                   opacity: 0.7,
-                  child: Text("View all 12 comments")
+                  child: Text('View all $commentsCount comments')
                 ),
-              ),
+              ) : SizedBox.shrink(),
+              
+              // Date Published
               Opacity(
                 opacity: 0.5,
                 child: Text( 

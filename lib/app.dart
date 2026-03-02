@@ -49,15 +49,19 @@ class _MyAppState extends State<MyApp> {
         stream: FirebaseAuth.instance.authStateChanges(), 
         builder: (context, snapshot) {
           if(snapshot.connectionState == ConnectionState.waiting){
-            return const Scaffold(body: Center(child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 20.0,
-              children: [
-                AppnameText(),
-                CircularProgressIndicator(),
-              ],
-            )));
+            return const Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 20.0,
+                  children: [
+                    AppnameText(),
+                    // CircularProgressIndicator(),
+                  ],
+                )
+              )
+            );
           }
 
           if(snapshot.hasData){
