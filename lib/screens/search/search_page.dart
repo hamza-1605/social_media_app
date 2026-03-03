@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:social_media_app/core/constants/app_colors.dart';
 import 'package:social_media_app/screens/search/widgets/grid_images.dart';
-import 'package:social_media_app/screens/search/widgets/recent_searches.dart';
+import 'package:social_media_app/screens/search/widgets/search_results.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -12,10 +15,26 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController textController = TextEditingController();
 
+  Timer? _debounce;
+  String _searchText = "";
+
   @override
   void dispose() {
     textController.dispose();
+    _debounce?.cancel();
     super.dispose();
+  }
+
+  void onSearchChanged(String value) {
+    if (_debounce?.isActive ?? false) {
+      _debounce!.cancel();
+    }
+
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        _searchText = value.trim();
+      });
+    });
   }
 
   @override
@@ -35,22 +54,33 @@ class _SearchPageState extends State<SearchPage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: textController,
-              onChanged: (value) => setState(() {}),
+              onChanged: onSearchChanged,
 
               decoration: InputDecoration(
-                hintText: "Search users, posts...",
+                hintText: "Search users by exact name/email",
                 prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    width: 0.2,
+                    color: AppColors.middlewareGrey,
+                  ),
+                ),
+
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    width: 1,
+                    color: AppColors.buttonBlue,
+                  ),
                 ),
               ),
             ),
           ),
 
           Expanded(
-            child: textController.text.isNotEmpty
-              ? const RecentSearches()
+            child: _searchText.isNotEmpty
+              ? SearchResults( text: _searchText )
               : const GridImages(),
           ),
           

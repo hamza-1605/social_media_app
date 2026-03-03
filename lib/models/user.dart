@@ -9,6 +9,7 @@ class User{
   String? bio;
   final List followers;
   final List following;
+  late final List<String> searchIndex;
 
 
   User({
@@ -19,8 +20,27 @@ class User{
     this.photoUrl, 
     this.bio, 
     required this.followers, 
-    required this.following
-  });
+    required this.following,
+  }){ 
+    searchIndex = _buildSearchIndex();
+  }
+
+
+  List<String> _buildSearchIndex() {
+    final first = firstname.toLowerCase();
+    final last = lastname.toLowerCase();
+    final userid = email.split('@').first.toLowerCase();
+    final lowerEmail = email.toLowerCase();
+    final fullName = "$first $last";
+
+    return [
+      first,
+      last,
+      fullName,
+      lowerEmail,
+      userid,
+    ];
+  }
 
 
   Map<String, dynamic> toJson () => {
@@ -31,7 +51,8 @@ class User{
     // "bio" : bio,
     "photoUrl" : photoUrl,
     "followers" : followers, 
-    "following" : following, 
+    "following" : following,
+    "searchIndex": _buildSearchIndex(),
   };
 
 
@@ -48,7 +69,7 @@ class User{
       followers: List<String>.from(snap["followers"]), 
       following: List<String>.from(snap["following"]),
       // bio: snap["bio"],
-      photoUrl: snap["photoUrl"]
+      photoUrl: snap["photoUrl"],
     );
   }
 

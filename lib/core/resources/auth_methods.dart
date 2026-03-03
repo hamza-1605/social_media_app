@@ -32,7 +32,7 @@ class AuthMethods {
     try {
       String message = "Some error occured!";
       
-      if (firstname.isNotEmpty || lastname.isNotEmpty || email.isNotEmpty) {
+      if (firstname.isNotEmpty && lastname.isNotEmpty && email.isNotEmpty) {
         UserCredential credentials = await fireAuth.createUserWithEmailAndPassword(
           email: email, 
           password: password
@@ -44,6 +44,7 @@ class AuthMethods {
           photoUrl = await StorageMethods()
                           .uploadImageToCloudinary(image: file, isPost: false);
         }
+        
 
         model.User newUser = model.User(
           firstname: firstname, 
