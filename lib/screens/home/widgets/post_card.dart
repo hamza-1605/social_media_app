@@ -26,7 +26,7 @@ class _PostCardState extends State<PostCard>{
   Future<void> getComments() async{
     QuerySnapshot commentSnap = await FirebaseFirestore.instance.collection('posts').doc(widget.snap['postid']).collection('comments').get();
     commentsCount = commentSnap.docs.length;
-    print('----------------------- No. of comments:  $commentsCount');
+    
     if(!mounted) return;
     setState(() {});
   }
@@ -71,7 +71,27 @@ class _PostCardState extends State<PostCard>{
               : null,
           ),
           title: Text('${widget.snap["firstname"]} ${widget.snap["lastname"]}', style: TextStyle(fontWeight: FontWeight.w600),),
-          trailing: Text("1h"),
+          trailing: user.userid == widget.snap["userid"] ? GestureDetector(
+            onTap: () {
+              showDialog(context: context, builder: (context) {
+                return SimpleDialog(
+                  contentPadding: EdgeInsets.all(15.0),
+                  children: [
+                    ListTile(
+                      onTap: (){
+                        FirestoreMethods().deletePost(widget.snap["postid"]);
+                        Navigator.pop(context);
+                      },
+                      title: Text('Delete'),
+                    ),
+                  ],
+                );
+              },);
+            },
+            child: Icon(
+              Icons.more_vert
+            )
+          ) : SizedBox.shrink(),
         ),
     
         // Post Image
@@ -189,7 +209,7 @@ class _PostCardState extends State<PostCard>{
               ),
 
               // view all comments
-              commentsCount != 0 ? InkWell(
+              commentsCount >= 2 ? InkWell(
                 onTap: () {
                   showModalBottomSheet(
                     isDismissible: true,

@@ -78,6 +78,7 @@ class FirestoreMethods {
       await firestore.collection('posts').doc(postId).collection('comments').doc(commentId).set({
         "postId" : postId,
         "commentText" : text,
+        "userid" : commentator.userid,
         "username" : commentator.email.split('@').first,
         "photoUrl" : commentator.photoUrl,
         "datePublished" : DateTime.now(),
@@ -106,6 +107,22 @@ class FirestoreMethods {
       }
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  Future<void> deletePost(String postId) async{
+    try {
+      await firestore.collection('posts').doc(postId).delete() ;
+    } catch (e) {
+      print(e.toString()) ;
+    }
+  }
+  
+  Future<void> deleteComment(String postId, String commentId) async{
+    try {
+      await firestore.collection('posts').doc(postId).collection('comments').doc(commentId).delete() ;
+    } catch (e) {
+      print(e.toString()) ;
     }
   }
 }

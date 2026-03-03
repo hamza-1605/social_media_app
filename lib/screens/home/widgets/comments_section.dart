@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:social_media_app/core/constants/links.dart';
 import 'package:social_media_app/core/providers/user_provider.dart';
 import 'package:social_media_app/core/resources/firestore_methods.dart';
-import 'package:social_media_app/core/utils/utils.dart';
+// import 'package:social_media_app/core/utils/utils.dart';
 import 'package:social_media_app/models/user.dart';
 import 'package:social_media_app/widgets/common/center_loader.dart';
 
@@ -79,10 +79,26 @@ class _CommentsSectionState extends State<CommentsSection> {
                     itemBuilder: (context, index) {
                     final snap = snaps[index].data(); 
                       return ListTile(
+                        onLongPress: () async{
+                          
+                          if(user.userid == snap["userid"]){
+                            showDialog(context: context, builder: (context) {
+                              return SimpleDialog(
+                                children: [
+                                  ListTile(
+                                    leading: Icon(Icons.delete_outline),
+                                    title: Text("Delete Comment"),
+                                    onTap: () => deleteComment(context, widget.postId, snaps[index].id ),
+                                  ),
+                                ],
+                              );
+                            },);
+                          }
+                        },
                         leading: CircleAvatar(
                           radius: 18,
                           child: ClipOval(
-                            child: Image.network( snap["photoUrl"]   ),
+                            child: Image.network( snap["photoUrl"], fit: BoxFit.cover, height: 36, width: 36,),
                           ),
                         ),
                         title: Text( 
@@ -118,7 +134,7 @@ class _CommentsSectionState extends State<CommentsSection> {
                             Text( snap["likes"].length.toString() ),
                           ],
                         ),
-                        isThreeLine:  snap["commentText"].toString().length > 35 ? true : false,
+                        isThreeLine:  snap["commentText"].toString().length > 35,
                       );
                     },
                     itemCount: snaps.length
@@ -154,7 +170,7 @@ class _CommentsSectionState extends State<CommentsSection> {
                     ),
                   ),
                   const SizedBox(width: 10),
-    
+                  
                   Expanded(
                     child: TextField(
                       controller: commentController,
@@ -195,8 +211,16 @@ class _CommentsSectionState extends State<CommentsSection> {
       );
       commentController.clear();
       
-      if(!context.mounted) return;
-      showSnackBar(context, "Comment posted successfully!");
+      // if(!context.mounted) return;
+      // showSnackBar(context, "Comment posted successfully!");
     }
   }
+
+
+  Future<void> deleteComment(BuildContext context, String postId, String commentId) async{
+    Navigator.pop(context);
+    FocusScope.of(context).unfocus();
+    await FirestoreMethods().deleteComment(postId, commentId);
+  }
+
 }
