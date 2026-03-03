@@ -182,11 +182,11 @@ class _CommentsSectionState extends State<CommentsSection> {
                           onTap: () => submitComment(context, user),
                           child: Icon(Icons.send)
                         ),
-                        
                         border: InputBorder.none,
                         focusedBorder: InputBorder.none,
                         enabledBorder: InputBorder.none,
                       ),
+                      textCapitalization: TextCapitalization.sentences,
                     ),
                   ),
                 ],

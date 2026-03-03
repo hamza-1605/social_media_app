@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:social_media_app/core/constants/app_colors.dart';
-import 'package:social_media_app/screens/search/widgets/grid_images.dart';
+import 'package:social_media_app/screens/search/widgets/grid_posts.dart';
 import 'package:social_media_app/screens/search/widgets/search_results.dart';
 
 class SearchPage extends StatefulWidget {
@@ -81,7 +81,7 @@ class _SearchPageState extends State<SearchPage> {
           Expanded(
             child: _searchText.isNotEmpty
               ? SearchResults( text: _searchText )
-              : const GridImages(),
+              : GridPosts(),
           ),
           
         ],

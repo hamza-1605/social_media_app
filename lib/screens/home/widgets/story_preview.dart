@@ -75,6 +75,7 @@ class StoryPreview extends StatelessWidget {
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: TextField(
+                        textCapitalization: TextCapitalization.sentences,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
