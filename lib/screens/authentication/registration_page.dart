@@ -89,7 +89,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           children: [
                             CircleAvatar(
                               radius: 50,
-                              backgroundColor: Theme.of(context).primaryColor,
                               child: Center(
                                 child: CircleAvatar(
                                   radius: 49.0,

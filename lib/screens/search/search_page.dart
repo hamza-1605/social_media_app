@@ -39,52 +39,56 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Search"),
-        centerTitle: true,
-        forceMaterialTransparency: true,
-      ),
-
-      body: Column(
-        spacing: 15,
-        children: [
-
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: textController,
-              onChanged: onSearchChanged,
-
-              decoration: InputDecoration(
-                hintText: "Search users by exact name/email",
-                prefixIcon: const Icon(Icons.search),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    width: 0.2,
-                    color: AppColors.middlewareGrey,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Search"),
+          centerTitle: true,
+          forceMaterialTransparency: true,
+        ),
+      
+        body: Column(
+          spacing: 15,
+          children: [
+      
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: textController,
+                onChanged: onSearchChanged,
+                textCapitalization: TextCapitalization.sentences,
+      
+                decoration: InputDecoration(
+                  hintText: "Search users by exact name/email",
+                  prefixIcon: const Icon(Icons.search),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      width: 0.2,
+                      color: AppColors.middlewareGrey,
+                    ),
                   ),
-                ),
-
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    width: 1,
-                    color: AppColors.buttonBlue,
+      
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      width: 1,
+                      color: AppColors.buttonBlue,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-
-          Expanded(
-            child: _searchText.isNotEmpty
-              ? SearchResults( text: _searchText )
-              : GridPosts(),
-          ),
-          
-        ],
+      
+            Expanded(
+              child: _searchText.isNotEmpty
+                ? SearchResults( text: _searchText )
+                : GridPosts(),
+            ),
+            
+          ],
+        ),
       ),
     );
   }

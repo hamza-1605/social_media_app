@@ -5,8 +5,9 @@ import 'package:social_media_app/screens/authentication/registration_page.dart';
 import 'package:social_media_app/screens/authentication/widgets/forgot_password_page.dart';
 import 'package:social_media_app/screens/create/widgets/add_post.dart';
 import 'package:social_media_app/screens/home/widgets/story_preview.dart';
+import 'package:social_media_app/screens/profile/profile_page.dart';
 import 'package:social_media_app/screens/profile/widgets/settings_page.dart';
-import 'package:social_media_app/screens/profile/widgets/view_post.dart';
+import 'package:social_media_app/widgets/common/view_post.dart';
 import 'package:social_media_app/widgets/specific/bottom_nav.dart';
 
 class AppRoutes {
@@ -26,7 +27,10 @@ class AppRoutes {
         return MaterialPageRoute(builder: (context) => SettingsPage(toggleTheme: toggleTheme));
 
       case '/viewpost':
-        return MaterialPageRoute(builder: (context) => ViewPost());
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(builder: (context) => ViewPost(
+          postid: args['postid'],
+        ));
 
       case '/addpost':
         final args = settings.arguments as Map<String, dynamic>;
@@ -40,6 +44,13 @@ class AppRoutes {
 
       case '/forgot-password':
         return MaterialPageRoute(builder: (context) => ForgotPasswordPage());
+
+      case '/viewProfile':
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(builder: (context) => ProfilePage(
+          userid: args['userid'],
+        ));
+
         
       default:
         return MaterialPageRoute(builder: (context) => ErrorPage(keyword: "error"));

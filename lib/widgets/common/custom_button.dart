@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:social_media_app/core/constants/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
-  const CustomButton( {super.key, required this.btnName} );
+  const CustomButton( {super.key, required this.btnName, required this.onTap} );
   final String btnName;
+  final Function onTap;
   
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class CustomButton extends StatelessWidget {
           ),
         ),
         
-        onPressed: (){}, 
+        onPressed: () => onTap, 
         child: Text(
           btnName, 
           style: TextStyle(

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:social_media_app/core/providers/user_provider.dart';
 import 'package:social_media_app/widgets/common/center_loader.dart';
 
 class SearchResults extends StatelessWidget {
@@ -26,13 +28,22 @@ class SearchResults extends StatelessWidget {
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const Center(child: Text("No users found"));
         }
-
         
+        final userProvider = Provider.of<UserProvider>(context);
+        if(!userProvider.isLoaded){
+          return SizedBox.shrink();
+        }
+
         final users = snapshot.data!.docs;
         return ListView.builder(
           itemCount: users.length,
           itemBuilder: (context, index) {
             final user = users[index].data();
+
+            if(user['userid'] == userProvider.getUser!.userid){
+              return SizedBox.shrink();
+            }
+
             return ListTile(
               title: Text( '${user["firstname"]} ${user['lastname']}' ),
               subtitle: Text( user["email"] ),
@@ -40,6 +51,10 @@ class SearchResults extends StatelessWidget {
                 radius: 18,
                 backgroundImage: NetworkImage( user['photoUrl'] ?? "" ),
               ),
+              onTap: () {
+                FocusScope.of(context).unfocus();
+                Navigator.pushNamed(context, '/viewProfile', arguments: {"userid": user["userid"]});
+              },
             );
           },
         );

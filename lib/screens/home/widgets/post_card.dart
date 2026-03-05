@@ -21,21 +21,6 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard>{
   bool animationStart = false;
-  int commentsCount = 0;
-
-  Future<void> getComments() async{
-    QuerySnapshot commentSnap = await FirebaseFirestore.instance.collection('posts').doc(widget.snap['postid']).collection('comments').get();
-    commentsCount = commentSnap.docs.length;
-    
-    if(!mounted) return;
-    setState(() {});
-  }
-  
-  @override
-  void initState(){
-    super.initState();
-    getComments();
-  }
 
   @override
   Widget build(BuildContext context){
@@ -82,7 +67,8 @@ class _PostCardState extends State<PostCard>{
                         FirestoreMethods().deletePost(widget.snap["postid"]);
                         Navigator.pop(context);
                       },
-                      title: Text('Delete'),
+                      leading: Icon(Icons.delete_outline),
+                      title: Text('Delete Post'),
                     ),
                   ],
                 );
@@ -140,106 +126,118 @@ class _PostCardState extends State<PostCard>{
         // Bottom Row for buttons
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Interaction buttons
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Row(
-                  spacing: 20.0,
-                  children: [
-                    // Like button
-                    GestureDetector(
-                      onTap: () async{
-                        await FirestoreMethods().likePost(
-                          user.userid, widget.snap["likes"], widget.snap["postid"]
-                        );
-                      },
-                      child: IconAndNumbers(
-                        amount: widget.snap["likes"].length.toString(), 
-                        icon: widget.snap["likes"].contains(user.userid) 
-                              ?   Icon(Icons.favorite, color: Colors.red)
-                              :   Icon(Icons.favorite_border),
-                      ),
-                    ),
-                    
-                    // Comments Button + Open Section
-                    GestureDetector(
-                      onTap: (){
-                        showModalBottomSheet(
-                          isDismissible: true,
-                          useSafeArea: false,
-                          showDragHandle: true,
-                          enableDrag: true,
-                          isScrollControlled: true,
-          
-                          context: context,
-                          builder: (context) => CommentsSection(
-                            postId: widget.snap['postid']
-                          ),
-                        );
-                      },
-                      child: IconAndNumbers(
-                        amount: commentsCount.toString() , 
-                        icon: Icon(Icons.chat_bubble_outline)
-                      )
-                    ),
-                    IconAndNumbers(amount: "", icon: Icon(Icons.send_outlined)),
-                  ],
-                ),
-              ),
-          
-              // id & caption
-              RichText(
-                text: TextSpan(
-                  text:  widget.snap["postUrl"] != null ? "$uniqueId\t\t" : "$uniqueId\tshared a thought!",
-                  children: widget.snap["postUrl"] != null ? [
-                    TextSpan(
-                      text: widget.snap["caption"],
-                      style: TextStyle(fontWeight: FontWeight.w500)
-                    ),
-                  ] : [],
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                )
-              ),
+          child: StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('posts').doc(widget.snap['postid']).collection('comments').snapshots(),
+            builder: (context, asyncSnapshot) {
+              if(!asyncSnapshot.hasData){
+                return SizedBox.shrink();
+              }
 
-              // view all comments
-              commentsCount >= 2 ? InkWell(
-                onTap: () {
-                  showModalBottomSheet(
-                    isDismissible: true,
-                    useSafeArea: false,
-                    showDragHandle: true,
-                    enableDrag: true,
-                    isScrollControlled: true,
-    
-                    context: context,
-                    builder: (context) => CommentsSection(
-                      postId: widget.snap['postid']
-                    ),
-                  );
-                },
-                child: Opacity(
-                  opacity: 0.7,
-                  child: Text('View all $commentsCount comments')
-                ),
-              ) : SizedBox.shrink(),
+              final commentsLength = asyncSnapshot.data!.docs.length;
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Interaction buttons
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: Row(
+                      spacing: 20.0,
+                      children: [
+                        // Like button
+                        GestureDetector(
+                          onTap: () async{
+                            await FirestoreMethods().likePost(
+                              user.userid, widget.snap["likes"], widget.snap["postid"]
+                            );
+                          },
+                          child: IconAndNumbers(
+                            amount: widget.snap["likes"].length.toString(), 
+                            icon: widget.snap["likes"].contains(user.userid) 
+                                  ?   Icon(Icons.favorite, color: Colors.red)
+                                  :   Icon(Icons.favorite_border),
+                          ),
+                        ),
+                        
+                        // Comments Button + Open Section
+                        GestureDetector(
+                          onTap: (){
+                            showModalBottomSheet(
+                              isDismissible: true,
+                              useSafeArea: false,
+                              showDragHandle: true,
+                              enableDrag: true,
+                              isScrollControlled: true,
               
-              // Date Published
-              Opacity(
-                opacity: 0.5,
-                child: Text( 
-                  DateFormat.yMMMMd().format( 
-                    widget.snap["datePublished"].toDate() 
-                  ) 
-                ),
-              ),
-            ]
+                              context: context,
+                              builder: (context) => CommentsSection(
+                                postId: widget.snap['postid']
+                              ),
+                            );
+                          },
+                              
+                          child: IconAndNumbers(
+                            amount: commentsLength.toString() , 
+                            icon: Icon(Icons.chat_bubble_outline)
+                          ),
+                        ),
+                        IconAndNumbers(amount: "", icon: Icon(Icons.send_outlined)),
+                      ],
+                    ),
+                  ),
+              
+                  // id & caption
+                  RichText(
+                    text: TextSpan(
+                      text:  widget.snap["postUrl"] != null ? "$uniqueId\t\t" : "$uniqueId\tshared a thought!",
+                      children: widget.snap["postUrl"] != null ? [
+                        TextSpan(
+                          text: widget.snap["caption"],
+                          style: TextStyle(fontWeight: FontWeight.w500)
+                        ),
+                      ] : [],
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    )
+                  ),
+              
+                  // view all comments
+                  commentsLength >= 2 ? InkWell(
+                    onTap: () {
+                      showModalBottomSheet(
+                        isDismissible: true,
+                        useSafeArea: false,
+                        showDragHandle: true,
+                        enableDrag: true,
+                        isScrollControlled: true,
+                  
+                        context: context,
+                        builder: (context) => CommentsSection(
+                          postId: widget.snap['postid']
+                        ),
+                      );
+                    },
+                    child: Opacity(
+                      opacity: 0.7,
+                      child: Text('View all $commentsLength comments')
+                    ),
+                  ) : SizedBox.shrink(),
+                  
+                  // Date Published
+                  Opacity(
+                    opacity: 0.5,
+                    child: Text( 
+                      DateFormat.yMMMMd().format( 
+                        widget.snap["datePublished"].toDate() 
+                      ) 
+                    ),
+                  ),
+                ]
+                
+              );
+            }
           ),
         ),
       ],

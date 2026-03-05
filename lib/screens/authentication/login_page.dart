@@ -182,9 +182,11 @@ class _LoginPageState extends State<LoginPage> {
       String message = e.toString();
       showSnackBar(context, message);
     } finally {
-      setState(() {
-        loading = false;
-      });
+      if(mounted){
+        setState(() {
+          loading = false;
+        });
+      }
     }
   }
 

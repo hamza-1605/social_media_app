@@ -9,8 +9,8 @@ class GridPosts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: FirebaseFirestore.instance.collection("posts").get() , 
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection("posts").orderBy("datePublished", descending: true).snapshots() , 
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CenterLoader();
@@ -32,31 +32,45 @@ class GridPosts extends StatelessWidget {
             children: List.generate(
               snaps.length, 
               (index) {
+                final snap = snaps[index].data();
                 return StaggeredGridTile.count(
                   crossAxisCellCount: (index % 5 == 0 ? 2 : 1), 
                   mainAxisCellCount: (index % 5 == 0 ? 2 : 1), 
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: snaps[index]['postUrl'] != null ?
-                      Image.network(
-                        color: AppColors.lightGrey,
-                        snaps[index]['postUrl'],
-                        fit: BoxFit.cover,
-                      )
-                      : Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: BoxBorder.all(width: 0.5)
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.pushNamed(context, '/viewpost', arguments: {"postid": snap['postid']});
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: snap['postUrl'] != null ?
+                        Image.network(
+                          snap['postUrl'],
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {  // Image fully loaded
+                              return child;
+                            }
+                            // While loading
+                            return Container(
+                              color: AppColors.lightGrey,
+                            );
+                          },
+                        )
+                        : Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: BoxBorder.all(width: 0.5)
+                          ),
+                          child: Center(
+                            child: Text( 
+                              snap['caption'].length > 15
+                                ? '${snap['caption'].substring(0, 15)}...'
+                                : snap['caption'], 
+                              textAlign: TextAlign.center,
+                            ),  
+                          ),
                         ),
-                        child: Center(
-                          child: Text( 
-                            snaps[index]['caption'].length > 15
-                              ? '${snaps[index]['caption'].substring(0, 15)}...'
-                              : snaps[index]['caption'], 
-                            textAlign: TextAlign.center,
-                          ),  
-                        ),
-                      ),
+                    ),
                   )
                 );
               },

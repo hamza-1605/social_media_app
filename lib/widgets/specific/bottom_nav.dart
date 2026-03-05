@@ -7,6 +7,7 @@ import 'package:social_media_app/screens/home/home_page.dart';
 import 'package:social_media_app/screens/notifications/notifications_page.dart';
 import 'package:social_media_app/screens/profile/profile_page.dart';
 import 'package:social_media_app/screens/search/search_page.dart';
+import 'package:social_media_app/widgets/common/appname_text.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
@@ -28,14 +29,18 @@ class _BottomNavState extends State<BottomNav> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final userProvider = Provider.of<UserProvider>(context);
+    if(!userProvider.isLoaded){
+      return Scaffold(body: Center(child: AppnameText()));
+    }
 
+    return Scaffold(
       body: [
         HomePage(),
         SearchPage(),
         CreatePost(),
         NotificationsPage(),
-        ProfilePage(),
+        ProfilePage( userid: userProvider.getUser!.userid ),
       ][currentIndex],
 
 

@@ -80,12 +80,14 @@ class _CommentsSectionState extends State<CommentsSection> {
                     final snap = snaps[index].data(); 
                       return ListTile(
                         onLongPress: () async{
-                          
                           if(user.userid == snap["userid"]){
                             showDialog(context: context, builder: (context) {
                               return SimpleDialog(
+                                contentPadding: EdgeInsets.all(15.0),
                                 children: [
                                   ListTile(
+                                    iconColor: Colors.red,
+                                    textColor: Colors.red,
                                     leading: Icon(Icons.delete_outline),
                                     title: Text("Delete Comment"),
                                     onTap: () => deleteComment(context, widget.postId, snaps[index].id ),
@@ -98,7 +100,12 @@ class _CommentsSectionState extends State<CommentsSection> {
                         leading: CircleAvatar(
                           radius: 18,
                           child: ClipOval(
-                            child: Image.network( snap["photoUrl"], fit: BoxFit.cover, height: 36, width: 36,),
+                            child: Image.network( 
+                              snap["photoUrl"] ?? Links().genericUser, 
+                              fit: BoxFit.cover, 
+                              height: 36, 
+                              width: 36,
+                            ),
                           ),
                         ),
                         title: Text( 
@@ -209,6 +216,8 @@ class _CommentsSectionState extends State<CommentsSection> {
         user, 
         commentController.text.trim(),
       );
+      
+      if (!mounted) return;
       commentController.clear();
       
       // if(!context.mounted) return;
