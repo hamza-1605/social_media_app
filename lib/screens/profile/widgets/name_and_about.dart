@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class NameAndAbout extends StatelessWidget {
-  const NameAndAbout({super.key, required this.email, required this.bio});
-  final String email;
+  const NameAndAbout({super.key, required this.name, required this.bio});
+  final String name;
   final String bio;
 
   @override
@@ -13,7 +13,7 @@ class NameAndAbout extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text( 
-            email, 
+            name, 
             style: TextStyle(
               fontSize: 18.0,
               fontWeight: FontWeight.w700

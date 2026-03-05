@@ -129,7 +129,8 @@ class _GoogleSigninState extends State<GoogleSignin> {
         followers: [], 
         following: [],
         photoUrl: userProfile,
-        bio: ""
+        bio: "", 
+        postsCount: 0,
       );        
 
       await FirebaseFirestore.instance.collection('users')

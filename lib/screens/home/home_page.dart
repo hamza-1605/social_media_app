@@ -1,14 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:social_media_app/core/providers/user_provider.dart';
 import 'package:social_media_app/screens/home/widgets/post_card.dart';
 // import 'package:social_media_app/screens/home/widgets/stories_bar.dart';
 import 'package:social_media_app/widgets/common/appname_text.dart';
+import 'package:social_media_app/widgets/common/center_loader.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final loggedUser = context.watch<UserProvider>().getUser!;
+
     return SafeArea(
       child: CustomScrollView(
         slivers: [
@@ -27,25 +32,41 @@ class HomePage extends StatelessWidget {
               
               if(snapshot.connectionState == ConnectionState.waiting){
                 return SliverToBoxAdapter(
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  child: const CenterLoader()
                 );
               }
 
-              if(snapshot.hasData){
-                if(snapshot.data!.docs.isEmpty) return SliverToBoxAdapter(child: Center(child: Text("No posts to show.")));
+              if (snapshot.hasData) {
+                final allPosts = snapshot.data!.docs;
+                final filteredPosts = allPosts
+                    .where( (doc) => loggedUser.following.contains(doc['userid']) )
+                    .toList();
+
+                if (filteredPosts.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 60),
+                      child: Center(
+                        child: Text(
+                          "Follow some more people to see some posts in your feed.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  );
+                }
 
                 return SliverList.separated(
                   separatorBuilder: (context, index) => SizedBox(height: 10.0),
-                  itemCount : snapshot.data!.docs.length,
+                  itemCount: filteredPosts.length,
                   itemBuilder: (context, index) {
-                      return PostCard(
-                        snap: snapshot.data!.docs[index].data(),
-                      );
-                  }, 
+                    final snap = filteredPosts[index].data();
+                    return PostCard(snap: snap);
+                  },
                 );
               }
+
 
               return SliverToBoxAdapter(child: Center(child: Text("Some unknown error occurred!")));
             },

@@ -40,7 +40,10 @@ class _BottomNavState extends State<BottomNav> {
         SearchPage(),
         CreatePost(),
         NotificationsPage(),
-        ProfilePage( userid: userProvider.getUser!.userid ),
+        ProfilePage( 
+          userid: userProvider.getUser!.userid,
+          email: userProvider.getUser!.email,
+        ),
       ][currentIndex],
 
 

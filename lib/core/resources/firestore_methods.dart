@@ -43,6 +43,10 @@ class FirestoreMethods {
 
       await firestore.collection('posts').doc(postid).set( post.toJson() );
 
+      await firestore.collection('users').doc(userid).update({
+        "postsCount" : FieldValue.increment(1),
+      });
+
       res = "success";
       return res;
     } catch (err) {
@@ -50,7 +54,6 @@ class FirestoreMethods {
       return res;
     }
   } 
-
 
 
   Future<void> likePost( String uid, List likes, String postId ) async{
@@ -79,7 +82,7 @@ class FirestoreMethods {
         "postId" : postId,
         "commentText" : text,
         "userid" : commentator.userid,
-        "username" : commentator.email.split('@').first,
+        "username" : commentator.email,
         "photoUrl" : commentator.photoUrl,
         "datePublished" : DateTime.now(),
         "likes" : []
@@ -110,14 +113,20 @@ class FirestoreMethods {
     }
   }
 
-  Future<void> deletePost(String postId) async{
+
+  Future<void> deletePost(String postId, String userid) async{
     try {
       await firestore.collection('posts').doc(postId).delete() ;
+      
+      await firestore.collection('users').doc(userid).update({
+        "postsCount" : FieldValue.increment(1),
+      });
     } catch (e) {
       print(e.toString()) ;
     }
   }
-  
+
+
   Future<void> deleteComment(String postId, String commentId) async{
     try {
       await firestore.collection('posts').doc(postId).collection('comments').doc(commentId).delete() ;
@@ -150,9 +159,10 @@ class FirestoreMethods {
           "following" : FieldValue.arrayUnion([followingId])
         });
       }
-
     } catch (e) {
       print(e.toString());
     }
   }
+
+
 }

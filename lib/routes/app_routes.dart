@@ -4,6 +4,7 @@ import 'package:social_media_app/screens/authentication/login_page.dart';
 import 'package:social_media_app/screens/authentication/registration_page.dart';
 import 'package:social_media_app/screens/authentication/widgets/forgot_password_page.dart';
 import 'package:social_media_app/screens/create/widgets/add_post.dart';
+import 'package:social_media_app/screens/home/widgets/follow_list.dart';
 import 'package:social_media_app/screens/home/widgets/story_preview.dart';
 import 'package:social_media_app/screens/profile/profile_page.dart';
 import 'package:social_media_app/screens/profile/widgets/settings_page.dart';
@@ -49,6 +50,14 @@ class AppRoutes {
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(builder: (context) => ProfilePage(
           userid: args['userid'],
+          email: args['email'],
+        ));
+      
+      case '/followList':
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(builder: (context) => FollowList(
+          users: args["users"],
+          heading: args["heading"],
         ));
 
         

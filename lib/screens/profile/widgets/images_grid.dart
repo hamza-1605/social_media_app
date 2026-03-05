@@ -9,11 +9,12 @@ class ImagesGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: FirebaseFirestore.instance.collection("posts")
-                  .where("userid", isEqualTo: userid)
-                  .orderBy("datePublished", descending: true)
-                  .get() , 
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection("posts")
+          .where("userid", isEqualTo: userid)
+          .orderBy("datePublished", descending: true)
+          .snapshots(),
                   
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -62,7 +63,7 @@ class ImagesGrid extends StatelessWidget {
                       : Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          border: BoxBorder.all(width: 0.5)
+                          border: BoxBorder.all(width: 0.5, color: AppColors.lightGrey),
                         ),
                         child: Center(
                           child: Text( 

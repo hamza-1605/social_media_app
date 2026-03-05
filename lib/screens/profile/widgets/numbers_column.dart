@@ -8,7 +8,7 @@ class NumbersColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text( number.toString() , style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
         Text( label , style: TextStyle(fontSize: 15.0) ),

@@ -97,23 +97,44 @@ class _CommentsSectionState extends State<CommentsSection> {
                             },);
                           }
                         },
-                        leading: CircleAvatar(
-                          radius: 18,
-                          child: ClipOval(
-                            child: Image.network( 
-                              snap["photoUrl"] ?? Links().genericUser, 
-                              fit: BoxFit.cover, 
-                              height: 36, 
-                              width: 36,
+                        
+                        leading: GestureDetector(
+                          onTap: () => Navigator.pushNamed(
+                            context, 
+                            '/viewProfile', 
+                            arguments: {
+                              "userid": snap["userid"],
+                              "email": snap["username"],
+                            }
+                          ),
+                          child: CircleAvatar(
+                            radius: 18,
+                            child: ClipOval(
+                              child: Image.network( 
+                                snap["photoUrl"] ?? Links().genericUser, 
+                                fit: BoxFit.cover, 
+                                height: 36, 
+                                width: 36,
+                              ),
                             ),
                           ),
                         ),
-                        title: Text( 
-                          snap["username"],
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700
-                          ), 
+                        title: GestureDetector(
+                          onTap: () => Navigator.pushNamed(
+                            context, 
+                            '/viewProfile', 
+                            arguments: {
+                              "userid": snap["userid"],
+                              "email": '${snap["username"]}',
+                            }
+                          ),
+                          child: Text( 
+                            snap["username"].split('@').first,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700
+                            ), 
+                          ),
                         ),
                         subtitle: Text(
                           snap["commentText"],
@@ -130,8 +151,7 @@ class _CommentsSectionState extends State<CommentsSection> {
                                   user.userid, 
                                   snap["likes"], 
                                   widget.postId,
-                                  snaps[index].id
-                                  // snap[index].data()
+                                  snaps[index].id,
                                 );
                               },
                               child: snap["likes"].contains(user.userid) 
@@ -154,7 +174,7 @@ class _CommentsSectionState extends State<CommentsSection> {
           ),
 
 
-          // Add a Comment textfield
+          // Add a Comment - textfield
           SafeArea(
             top: false,
             child: Container(

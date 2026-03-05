@@ -39,23 +39,43 @@ class _PostCardState extends State<PostCard>{
       children: [
         // Name and PP
         ListTile(
-          leading: CircleAvatar( 
-            radius: 22,
-            backgroundImage: widget.snap["profileUrl"] == null 
-              ? NetworkImage( Links().genericUser ) 
-              : null,
-            child: widget.snap["profileUrl"] != null 
-              ? ClipOval(
-                child: Image.network( 
-                  widget.snap["profileUrl"],
-                  fit: BoxFit.cover,
-                  height: 44, 
-                  width: 44, 
-                  ),
-                )
-              : null,
+          leading: GestureDetector(
+            onTap: () => Navigator.pushNamed(
+              context, 
+              '/viewProfile', 
+              arguments: {
+                "userid": widget.snap["userid"],
+                "email": widget.snap["email"],
+              }
+            ),
+            child: CircleAvatar( 
+              radius: 22,
+              backgroundImage: widget.snap["profileUrl"] == null 
+                ? NetworkImage( Links().genericUser ) 
+                : null,
+              child: widget.snap["profileUrl"] != null 
+                ? ClipOval(
+                  child: Image.network( 
+                    widget.snap["profileUrl"],
+                    fit: BoxFit.cover,
+                    height: 44, 
+                    width: 44, 
+                    ),
+                  )
+                : null,
+            ),
           ),
-          title: Text('${widget.snap["firstname"]} ${widget.snap["lastname"]}', style: TextStyle(fontWeight: FontWeight.w600),),
+          title: GestureDetector(
+            onTap: () => Navigator.pushNamed(
+              context, 
+              '/viewProfile', 
+              arguments: {
+                "userid": widget.snap["userid"],
+                "email": widget.snap["email"],
+              }
+            ), 
+            child: Text('${widget.snap["firstname"]} ${widget.snap["lastname"]}', style: TextStyle(fontWeight: FontWeight.w600),)
+          ),
           trailing: user.userid == widget.snap["userid"] ? GestureDetector(
             onTap: () {
               showDialog(context: context, builder: (context) {
@@ -64,7 +84,7 @@ class _PostCardState extends State<PostCard>{
                   children: [
                     ListTile(
                       onTap: (){
-                        FirestoreMethods().deletePost(widget.snap["postid"]);
+                        FirestoreMethods().deletePost(widget.snap["postid"], user.userid);
                         Navigator.pop(context);
                       },
                       leading: Icon(Icons.delete_outline),
@@ -123,7 +143,7 @@ class _PostCardState extends State<PostCard>{
           )
         ),
 
-        // Bottom Row for buttons
+        // Bottom Row for buttons   &&    id & caption
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: StreamBuilder(
@@ -240,6 +260,7 @@ class _PostCardState extends State<PostCard>{
             }
           ),
         ),
+      
       ],
     );
   }

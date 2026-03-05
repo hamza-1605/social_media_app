@@ -5,6 +5,7 @@ class User{
   final String lastname;
   final String email;
   final String userid;
+  final int postsCount;
   String? photoUrl;
   String? bio;
   final List followers;
@@ -17,6 +18,7 @@ class User{
     required this.lastname, 
     required this.email, 
     required this.userid, 
+    required this.postsCount,
     this.photoUrl, 
     this.bio, 
     required this.followers, 
@@ -47,7 +49,8 @@ class User{
     "firstname" : firstname, 
     "lastname" : lastname, 
     "email" : email, 
-    "userid" : userid, 
+    "userid" : userid,
+    "postsCount" : postsCount, 
     // "bio" : bio,
     "photoUrl" : photoUrl,
     "followers" : followers, 
@@ -70,6 +73,7 @@ class User{
       following: List<String>.from(snap["following"]),
       // bio: snap["bio"],
       photoUrl: snap["photoUrl"],
+      postsCount: snap["postsCount"] ?? 0
     );
   }
 

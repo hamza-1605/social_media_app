@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_media_app/core/constants/links.dart';
 import 'package:social_media_app/core/providers/user_provider.dart';
 import 'package:social_media_app/widgets/common/center_loader.dart';
 
@@ -49,11 +50,18 @@ class SearchResults extends StatelessWidget {
               subtitle: Text( user["email"] ),
               leading: CircleAvatar(
                 radius: 18,
-                backgroundImage: NetworkImage( user['photoUrl'] ?? "" ),
+                backgroundImage: NetworkImage( user['photoUrl'] ?? Links().genericUser ),
               ),
               onTap: () {
                 FocusScope.of(context).unfocus();
-                Navigator.pushNamed(context, '/viewProfile', arguments: {"userid": user["userid"]});
+                Navigator.pushNamed(
+                  context, 
+                  '/viewProfile', 
+                  arguments: {
+                    "userid": user["userid"],
+                    "email": user["email"],
+                  }
+                );
               },
             );
           },

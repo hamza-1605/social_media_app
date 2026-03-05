@@ -55,6 +55,7 @@ class AuthMethods {
           following: [],
           photoUrl: photoUrl,
           bio: "",
+          postsCount: 0,
         );        
 
         await fireStore.collection('users')

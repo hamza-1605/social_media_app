@@ -61,7 +61,13 @@ class _SearchPageState extends State<SearchPage> {
       
                 decoration: InputDecoration(
                   hintText: "Search users by exact name/email",
+                  hintStyle: TextStyle( fontSize: 14 ),
                   prefixIcon: const Icon(Icons.search),
+                  suffixIcon: GestureDetector(
+                    onTap: () => textController.clear(),
+                    child: textController.text.isEmpty ? SizedBox.shrink() : const Icon(Icons.close)
+                  ),
+                  
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: const BorderSide(
