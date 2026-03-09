@@ -88,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage>{
                                 senderId: loggedUser.userid, 
                                 receiverId: user.userid,
                                 notificationType: "follow", 
-                                text: '${user.firstname} ${user.lastname} started following you.'
+                                text: '${loggedUser.firstname} ${loggedUser.lastname} started following you.'
                               );
 
                             }

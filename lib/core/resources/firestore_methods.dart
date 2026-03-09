@@ -141,7 +141,7 @@ class FirestoreMethods {
   }
 
 
-  Future<bool> followUser( String userid, String followingId) async{
+  Future<bool> followUser( String userid, String followingId ) async{
     try {
       DocumentSnapshot snap = await firestore.collection('users').doc(userid).get();
       List myfollowing = (snap.data()! as dynamic)['following'];

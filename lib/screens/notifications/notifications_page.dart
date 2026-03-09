@@ -41,20 +41,21 @@ class NotificationsPage extends StatelessWidget {
                   : notification['notificationType'] == 'comment' ? Icons.message_rounded : Icons.person_add;
                 
                 final date = '${DateFormat.yMd().format(
-                        notification['createdAt'].toDate()
-                      )}, ${DateFormat.Hm().format(
-                       notification['createdAt'].toDate() 
-                      )}';
+                  notification['createdAt'].toDate()
+                )}, ${DateFormat.Hm().format(
+                  notification['createdAt'].toDate() 
+                )}';
 
                 final textButton = notification['postId'] != null 
                   ? OutlinedButton(
                     onPressed: () => Navigator.pushNamed(context, '/viewpost', arguments: { "postid" : notification["postId"]}),
                     child: Text('View Post')
                   )  
-                  :  TextButton(
+                  : OutlinedButton(
                     onPressed: () => Navigator.pushNamed(context, '/viewProfile', arguments: { "userid" : notification["senderId"]}),
                     child: Text('View Profile')
                   );
+
 
                 return Card(
                   child: ListTile(
@@ -74,6 +75,7 @@ class NotificationsPage extends StatelessWidget {
       ),
     );
   }
+
 
 
   IconData getIcon(String type) {
