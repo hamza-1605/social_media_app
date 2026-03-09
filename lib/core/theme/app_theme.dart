@@ -40,6 +40,10 @@ class AppTheme {
       )
     ),
 
+    cardTheme: CardThemeData(
+      color: const Color.fromARGB(255, 252, 249, 255)
+    ),
+
   );
 
 
@@ -87,7 +91,9 @@ class AppTheme {
     switchTheme: SwitchThemeData(
       trackColor: WidgetStatePropertyAll( AppColors.buttonBlue ),
       thumbColor: WidgetStatePropertyAll( Colors.white ),
-    )
+    ),
+
+    
   );
 
 }

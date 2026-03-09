@@ -14,7 +14,9 @@ class _CreatePostState extends State<CreatePost> {
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.post_add, size: 30.0,),
-        title: Text("Create a Post"),
+        title: Text("Create a Post", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20)),
+        centerTitle: true,
+        toolbarHeight: 50,
       ),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,

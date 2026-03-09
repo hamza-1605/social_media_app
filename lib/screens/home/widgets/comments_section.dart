@@ -10,7 +10,8 @@ import 'package:social_media_app/widgets/common/center_loader.dart';
 
 class CommentsSection extends StatefulWidget {
   final String postId;
-  const CommentsSection({super.key, required this.postId});
+  final String posterId;
+  const CommentsSection({super.key, required this.postId, required this.posterId});
 
   @override
   State<CommentsSection> createState() => _CommentsSectionState();
@@ -231,14 +232,24 @@ class _CommentsSectionState extends State<CommentsSection> {
     if( commentController.text.trim() != "" ){
       FocusScope.of(context).unfocus();
       
-      await FirestoreMethods().postComment(
+      String commentId = await FirestoreMethods().postComment(
         widget.postId, 
         user, 
         commentController.text.trim(),
       );
-      
-      if (!mounted) return;
-      commentController.clear();
+
+      if (mounted){
+        commentController.clear();
+      }
+
+      await FirestoreMethods().generateNotification(
+        senderId: user.userid, 
+        receiverId: widget.posterId, 
+        postId: widget.postId, 
+        commentId: commentId,
+        notificationType: "comment", 
+        text: '${user.firstname} ${user.lastname} commented on your post.'
+      );
       
       // if(!context.mounted) return;
       // showSnackBar(context, "Comment posted successfully!");
@@ -250,6 +261,7 @@ class _CommentsSectionState extends State<CommentsSection> {
     Navigator.pop(context);
     FocusScope.of(context).unfocus();
     await FirestoreMethods().deleteComment(postId, commentId);
+    await FirestoreMethods().deleteCommentNotification(receiverId: widget.posterId, commentId: commentId);
   }
 
 }

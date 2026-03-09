@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:social_media_app/core/resources/storage_methods.dart';
+import 'package:social_media_app/models/app_notification.dart';
 import 'package:social_media_app/models/post.dart';
 import 'package:social_media_app/models/user.dart';
 import 'package:uuid/uuid.dart';
@@ -56,25 +57,28 @@ class FirestoreMethods {
   } 
 
 
-  Future<void> likePost( String uid, List likes, String postId ) async{
+  Future<bool> likePost( String uid, List likes, String postId ) async{
     try {
       if( likes.contains(uid) ){
         await firestore.collection("posts").doc(postId).update({
           "likes" : FieldValue.arrayRemove([uid])
         });
+        return false;
       }
       else{
         await firestore.collection("posts").doc(postId).update({
           "likes" : FieldValue.arrayUnion([uid])
         });
+        return true;
       }
     } catch (e) {
       print(e.toString());
+      return false;
     }
   }
 
 
-  Future<void> postComment( String postId, User commentator, String text ) async{
+  Future<String> postComment( String postId, User commentator, String text ) async{
     try {
       String commentId = const Uuid().v1();
 
@@ -89,9 +93,10 @@ class FirestoreMethods {
       });
 
       print("Firebase saved comment successfully");
-
+      return commentId;
     } catch (e) {
       print(e.toString());
+      return "";
     }
   }
 
@@ -136,7 +141,7 @@ class FirestoreMethods {
   }
 
 
-  Future<void> followUser( String userid, String followingId) async{
+  Future<bool> followUser( String userid, String followingId) async{
     try {
       DocumentSnapshot snap = await firestore.collection('users').doc(userid).get();
       List myfollowing = (snap.data()! as dynamic)['following'];
@@ -149,6 +154,8 @@ class FirestoreMethods {
         await firestore.collection('users').doc(userid).update({
           "following" : FieldValue.arrayRemove([followingId])
         });
+
+        return false;
       }
       else{
         await firestore.collection('users').doc(followingId).update({
@@ -158,11 +165,112 @@ class FirestoreMethods {
         await firestore.collection('users').doc(userid).update({
           "following" : FieldValue.arrayUnion([followingId])
         });
+        return true;
       }
     } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
+
+
+  
+  Future<void> generateNotification({
+    required String senderId,
+    required String receiverId,
+    String? postId,
+    String? commentId,
+    required String notificationType,
+    required String text,
+  }) async{
+    try {
+      if(senderId == receiverId) return;
+      final document = firestore.collection('users').doc(receiverId).collection('notifications').doc(); 
+
+      await document.set(
+        AppNotification(
+          notificationId: document.id, 
+          senderId: senderId, 
+          receiverId: receiverId, 
+          postId: postId,
+          commentId: commentId,
+          notificationType: notificationType, 
+          text: text, 
+          isRead: false, 
+          createdAt: Timestamp.now()
+        ).notificationToJson()
+      );
+
+    } catch (e) {
+      print("-----------------");
+      print("Error while generating a notification:");
+      print( e.toString() );
+      print("-----------------");
+    }
+  }
+
+
+  Future<void> deleteLikeNotification(
+    String receiverId, String senderId, String postId, 
+  ) async{
+    try {
+      final likedPostNotification = await firestore.collection('users').doc(receiverId).collection('notifications')
+              .where("senderId", isEqualTo: senderId)
+              .where("postId", isEqualTo: postId)
+              .where("notificationType", isEqualTo: "like")
+              .get();
+
+      for (var doc in likedPostNotification.docs) {
+        await doc.reference.delete();
+      }
+
+    } catch (e) {
+      print("Error while deleting notification of like");
+      print(e.toString());
+    }
+  }
+
+  
+  Future<void> deleteFollowNotification(
+    String receiverId, String senderId 
+  ) async{
+    try {
+      final followNotification = await firestore.collection('users').doc(receiverId).collection('notifications')
+              .where("senderId", isEqualTo: senderId)
+              .where("notificationType", isEqualTo: "follow")
+              .get();
+
+      for (var doc in followNotification.docs) {
+        await doc.reference.delete();
+      }
+
+    } catch (e) {
+      print("Error while deleting notification of follow");
       print(e.toString());
     }
   }
 
 
+  
+  Future<void> deleteCommentNotification({
+    required String receiverId, required String commentId
+  }) async{
+    try {
+      final commentNotification = await firestore.collection('users').doc(receiverId).collection('notifications')
+              .where("commentId", isEqualTo: commentId)
+              .get();
+
+      for (var doc in commentNotification.docs) {
+        await doc.reference.delete();
+      }
+
+    } catch (e) {
+      print("Error while deleting notification of comment");
+      print(e.toString());
+    }
+  }
+
+
+
+  
 }

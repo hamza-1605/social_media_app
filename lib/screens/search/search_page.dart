@@ -43,9 +43,10 @@ class _SearchPageState extends State<SearchPage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Search"),
+          title: const Text("Search", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20)),
           centerTitle: true,
           forceMaterialTransparency: true,
+          toolbarHeight: 50,
         ),
       
         body: Column(

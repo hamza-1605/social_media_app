@@ -51,7 +51,7 @@ class User{
     "email" : email, 
     "userid" : userid,
     "postsCount" : postsCount, 
-    // "bio" : bio,
+    "bio" : bio,
     "photoUrl" : photoUrl,
     "followers" : followers, 
     "following" : following,
@@ -71,7 +71,7 @@ class User{
       userid: snap["userid"], 
       followers: List<String>.from(snap["followers"]), 
       following: List<String>.from(snap["following"]),
-      // bio: snap["bio"],
+      bio: snap["bio"] ?? "",
       photoUrl: snap["photoUrl"],
       postsCount: snap["postsCount"] ?? 0
     );

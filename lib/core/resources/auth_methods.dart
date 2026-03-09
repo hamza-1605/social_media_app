@@ -28,6 +28,7 @@ class AuthMethods {
     required String email,
     required String password,
     Uint8List? file,
+    String? bio,
   }) async{
     try {
       String message = "Some error occured!";
@@ -54,7 +55,7 @@ class AuthMethods {
           followers: [], 
           following: [],
           photoUrl: photoUrl,
-          bio: "",
+          bio: bio,
           postsCount: 0,
         );        
 

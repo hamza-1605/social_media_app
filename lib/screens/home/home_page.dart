@@ -20,7 +20,8 @@ class HomePage extends StatelessWidget {
           SliverAppBar(
             title: AppnameText(),
             centerTitle: true,
-            pinned: false,
+            pinned: false,        
+            toolbarHeight: 50,
           ),
           // SliverToBoxAdapter(
           //   child: StoriesBar(),

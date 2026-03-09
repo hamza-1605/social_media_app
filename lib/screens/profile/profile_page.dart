@@ -30,6 +30,7 @@ class _ProfilePageState extends State<ProfilePage>{
           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
         ),
         centerTitle: true,
+        forceMaterialTransparency: true,
         actions: [
           loggedUser.userid == widget.userid 
           ? GestureDetector(
@@ -66,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage>{
                 shrinkWrap: true,
                 children: [
                   HeaderRow( user: user ),
-                  NameAndAbout( name: '${user.firstname} ${user.lastname}', bio: user.bio ?? "ukhejfs kdhfk hsh fashkahsf kah hkafshfkahfkasj j hkjhafkjfhakshfkdahkj  kahjafhkhfj kj kahfjk ha a kahfkjahsjkah \nfjdshfkhdkjfhdsjfh kj hkjdhfskjhk" ),
+                  NameAndAbout( name: '${user.firstname} ${user.lastname}', bio: user.bio ?? "" ),
                   
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -77,10 +78,24 @@ class _ProfilePageState extends State<ProfilePage>{
                           transparent: user.followers.contains(loggedUser.userid) ? true : false ,
                           btnName: user.followers.contains(loggedUser.userid) ?  "Unfollow" : "Follow", 
                           onTap: () async {
-                            await FirestoreMethods().followUser(
+                            bool isFollowing = await FirestoreMethods().followUser(
                               loggedUser.userid,
                               widget.userid,
                             );
+
+                            if( isFollowing ){
+                              await FirestoreMethods().generateNotification(
+                                senderId: loggedUser.userid, 
+                                receiverId: user.userid,
+                                notificationType: "follow", 
+                                text: '${user.firstname} ${user.lastname} started following you.'
+                              );
+
+                            }
+                            else{
+                              await FirestoreMethods().deleteFollowNotification(user.userid, loggedUser.userid);
+                            }
+
                             if(!context.mounted) return;
                             await context.read<UserProvider>().refreshUser();
                           },

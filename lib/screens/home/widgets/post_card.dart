@@ -167,9 +167,22 @@ class _PostCardState extends State<PostCard>{
                         // Like button
                         GestureDetector(
                           onTap: () async{
-                            await FirestoreMethods().likePost(
+                            bool liked = await FirestoreMethods().likePost(
                               user.userid, widget.snap["likes"], widget.snap["postid"]
                             );
+
+                            if( liked ){
+                              await FirestoreMethods().generateNotification(
+                                senderId:  user.userid, 
+                                receiverId: widget.snap["userid"], 
+                                postId: widget.snap["postid"], 
+                                notificationType: "like", 
+                                text: '${user.firstname} ${user.lastname} liked your post.',
+                              );
+                            }
+                            else{
+                              await FirestoreMethods().deleteLikeNotification(widget.snap["userid"], user.userid, widget.snap["postid"]);
+                            }
                           },
                           child: IconAndNumbers(
                             amount: widget.snap["likes"].length.toString(), 
@@ -191,7 +204,8 @@ class _PostCardState extends State<PostCard>{
               
                               context: context,
                               builder: (context) => CommentsSection(
-                                postId: widget.snap['postid']
+                                postId: widget.snap['postid'],
+                                posterId: widget.snap['userid']
                               ),
                             );
                           },
@@ -235,7 +249,8 @@ class _PostCardState extends State<PostCard>{
                   
                         context: context,
                         builder: (context) => CommentsSection(
-                          postId: widget.snap['postid']
+                          postId: widget.snap['postid'],
+                          posterId: widget.snap['userid']
                         ),
                       );
                     },
@@ -271,6 +286,7 @@ class _PostCardState extends State<PostCard>{
     setState(() {
       animationStart = true;
     });
+
     Timer(
       Duration(milliseconds: 800), 
       (){
@@ -280,9 +296,23 @@ class _PostCardState extends State<PostCard>{
         });
       }
     );
-    await FirestoreMethods().likePost(
+
+    bool liked = await FirestoreMethods().likePost(
       user.userid, widget.snap["likes"], widget.snap["postid"]
     );
+
+    if( liked ){
+      await FirestoreMethods().generateNotification(
+        senderId: user.userid, 
+        receiverId: widget.snap["userid"], 
+        postId: widget.snap["postid"], 
+        notificationType: "like", 
+        text: '${user.firstname} ${user.lastname} liked your post.',
+      );
+    }
+    else{
+      await FirestoreMethods().deleteLikeNotification(widget.snap["userid"], user.userid, widget.snap["postid"]);
+    }
   }
 
 }

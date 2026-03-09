@@ -26,11 +26,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
   TextEditingController lastnameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController rePasswordController = TextEditingController();
+  TextEditingController bioController = TextEditingController();
   FocusNode emailNode = FocusNode();
   FocusNode firstnameNode = FocusNode();
   FocusNode lastnameNode = FocusNode();
   FocusNode passwordNode = FocusNode();
   FocusNode rePasswordNode = FocusNode();
+  FocusNode bioNode = FocusNode();
   
   bool loading = false; 
   bool showPassword = false;
@@ -44,12 +46,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
     lastnameController.dispose();
     passwordController.dispose();
     rePasswordController.dispose();
+    bioController.dispose();
     
     emailNode.dispose();
     firstnameNode.dispose();
     lastnameNode.dispose();
     passwordNode.dispose();
     rePasswordNode.dispose();
+    bioNode.dispose();
     super.dispose();
   }
 
@@ -169,7 +173,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         controller: rePasswordController,
                         node: rePasswordNode,
                         label: "Re-enter Password*",
-                        submit: () => FocusScope.of(context).unfocus(),
+                        submit: () => FocusScope.of(context).requestFocus(bioNode),
                         validator: (rePassword) => 
                           Validators.rePasswordValidator(
                             passwordController.text, 
@@ -179,6 +183,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         suffixIcon: passwordVisibility( showConfirmPassword ),
                         suffixPress: () => setState(() => showConfirmPassword = !showConfirmPassword),
                       ),      
+
+
+                      CustomTextBox(
+                        controller: bioController, 
+                        label: "Bio (optional)", 
+                        node: bioNode, 
+                        submit: () => FocusScope.of(context).unfocus(),
+                      ),
               
               
                       // Submit button
@@ -248,6 +260,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           lastname : lastnameController.text.trim(),
           email : emailController.text.trim(),
           password: passwordController.text,
+          bio: bioController.text.trim(),
           file: image,
         );
 
