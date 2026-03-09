@@ -26,49 +26,47 @@ class GridPosts extends StatelessWidget {
         final snaps = snapshot.data!.docs;
         return Padding(
           padding: const EdgeInsets.all(5.0),
-          child: StaggeredGrid.count(
-            crossAxisCount: 3,
+          child: MasonryGridView.builder(
             mainAxisSpacing: 6,
             crossAxisSpacing: 6,
-            children: List.generate(
-              snaps.length, 
-              (index) {
-                final snap = snaps[index].data();
-                return StaggeredGridTile.count(
-                  crossAxisCellCount: (index % 5 == 0 ? 2 : 1), 
-                  mainAxisCellCount: (index % 5 == 0 ? 2 : 1), 
-                  child: GestureDetector(
-                    onTap: (){
-                      Navigator.pushNamed(context, '/viewpost', arguments: {"postid": snap['postid']});
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: snap['postUrl'] != null ?
-                        CachedNetworkImage(
-                          imageUrl: snap['postUrl'],
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(color: AppColors.lightGrey),
-                          errorWidget: (context, url, error) => Icon(Icons.error_outline),
-                        )
-                        : Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: BoxBorder.all(width: 0.5)
-                          ),
-                          child: Center(
-                            child: Text( 
-                              snap['caption'].length > 15
-                                ? '${snap['caption'].substring(0, 15)}...'
-                                : snap['caption'], 
-                              textAlign: TextAlign.center,
-                            ),  
-                          ),
+            gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            itemCount: snaps.length,
+            itemBuilder: (context, index) {
+              final snap = snaps[index].data();
+              return GestureDetector(
+                onTap: (){
+                  Navigator.pushNamed(context, '/viewpost', arguments: {"postid": snap['postid']});
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: AspectRatio(
+                    aspectRatio: 1/1.3,
+                    child: snap['postUrl'] != null ?
+                      CachedNetworkImage(
+                        imageUrl: snap['postUrl'],
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(color: AppColors.lightGrey),
+                        errorWidget: (context, url, error) => Icon(Icons.error_outline),
+                      )
+                      : Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: BoxBorder.all(width: 0.5)
                         ),
-                    ),
-                  )
-                );
-              },
-            ) 
+                        padding: EdgeInsets.all(5.0),
+                        child: Center(
+                          child: Text( 
+                            snap['caption'].length > 30
+                              ? '${snap['caption'].substring(0, 30)}...'
+                              : snap['caption'], 
+                            textAlign: TextAlign.center,
+                          ),  
+                        ),
+                      ),
+                  ),
+                ), 
+              );
+            },
           ),
         );
       },
