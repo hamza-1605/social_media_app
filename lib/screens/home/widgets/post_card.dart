@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:social_media_app/core/constants/app_colors.dart';
 import 'package:social_media_app/core/constants/links.dart';
 import 'package:social_media_app/core/providers/user_provider.dart';
 import 'package:social_media_app/core/resources/firestore_methods.dart';
@@ -45,18 +47,18 @@ class _PostCardState extends State<PostCard>{
               '/viewProfile', 
               arguments: {
                 "userid": widget.snap["userid"],
-                "email": widget.snap["email"],
               }
             ),
             child: CircleAvatar( 
               radius: 22,
               backgroundImage: widget.snap["profileUrl"] == null 
-                ? NetworkImage( Links().genericUser ) 
+                ? CachedNetworkImageProvider( Links().genericUser ) 
                 : null,
               child: widget.snap["profileUrl"] != null 
                 ? ClipOval(
-                  child: Image.network( 
-                    widget.snap["profileUrl"],
+                  child: CachedNetworkImage(
+                    imageUrl: widget.snap["profileUrl"],
+                    placeholder: (context, url) => Container(color: AppColors.lightGrey),
                     fit: BoxFit.cover,
                     height: 44, 
                     width: 44, 
@@ -71,7 +73,6 @@ class _PostCardState extends State<PostCard>{
               '/viewProfile', 
               arguments: {
                 "userid": widget.snap["userid"],
-                "email": widget.snap["email"],
               }
             ), 
             child: Text('${widget.snap["firstname"]} ${widget.snap["lastname"]}', style: TextStyle(fontWeight: FontWeight.w600),)
@@ -85,6 +86,7 @@ class _PostCardState extends State<PostCard>{
                     ListTile(
                       onTap: (){
                         FirestoreMethods().deletePost(widget.snap["postid"], user.userid);
+                        Navigator.pop(context);
                         Navigator.pop(context);
                       },
                       leading: Icon(Icons.delete_outline),
@@ -110,8 +112,9 @@ class _PostCardState extends State<PostCard>{
               children: [
                 GestureDetector(
                   onDoubleTap: () => likeAction( user ),
-                  child: Image.network(
-                    widget.snap["postUrl"] ,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.snap["postUrl"] ,
+                    placeholder: (context, url) => Container(color: AppColors.lightGrey),
                     fit: BoxFit.contain,
                   ),
                 ),

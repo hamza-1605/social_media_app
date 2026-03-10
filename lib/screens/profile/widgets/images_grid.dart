@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/core/constants/app_colors.dart';
@@ -47,18 +48,12 @@ class ImagesGrid extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: snap['postUrl'] != null ?
-                      Image.network(
-                        snap['postUrl'],
+                      CachedNetworkImage(
+                        imageUrl: snap['postUrl'],
                         fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) {  // Image fully loaded
-                            return child;
-                          }
-                          // While loading
-                          return Container(
-                            color: AppColors.lightGrey,
-                          );
-                        },
+
+                        placeholder: (context, url) => Container(color: AppColors.lightGrey),
+                        errorWidget: (context, url, error) => Icon(Icons.error_outline),
                       )
                       : Container(
                         decoration: BoxDecoration(

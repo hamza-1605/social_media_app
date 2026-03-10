@@ -19,6 +19,9 @@ class ViewPost extends StatelessWidget {
             if(snapshot.connectionState == ConnectionState.waiting){
               return CenterLoader();
             }
+            if (!snapshot.hasData || !snapshot.data!.exists) {
+              return const Center(child: Text("Post no longer exists"));
+            }
 
             final snap = snapshot.data!.data() as Map<String, dynamic>;
             return PostCard(snap: snap);

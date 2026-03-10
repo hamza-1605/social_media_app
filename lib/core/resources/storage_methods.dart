@@ -34,12 +34,12 @@ class StorageMethods {
         fileName: fileName ?? ( isPost ? Uuid().v1()
                                        : auth.currentUser!.uid ),
         progressCallback: (count, total) {
-          print( 'Uploading progress: $count/$total' );
+          // print( 'Uploading progress: $count/$total' );
         }
       );
 
       if(response.isSuccessful) {
-        print('Get your image from ${response.secureUrl}');
+        // print('Get your image from ${response.secureUrl}');
         return response.secureUrl;
       } else {
         print("Upload failed: ${response.error}");

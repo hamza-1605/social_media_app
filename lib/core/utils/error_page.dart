@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:social_media_app/core/constants/app_colors.dart';
 
 class ErrorPage extends StatelessWidget {
   ErrorPage({super.key, required this.keyword});
@@ -45,7 +47,12 @@ class ErrorPage extends StatelessWidget {
             spacing: 15.0,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.network( page["imageLink"] , width: MediaQuery.of(context).size.width / 1.5, ),
+              CachedNetworkImage( 
+                imageUrl: page["imageLink"] ,
+                placeholder: (context, url) => Container(color: AppColors.lightGrey),
+                errorWidget: (context, url, error) => Icon(Icons.error_outline), 
+                width: MediaQuery.of(context).size.width / 1.5, 
+              ),
               Text("Oh uh!", style: TextStyle(fontSize: 50, fontWeight: FontWeight.w800),),
               Text( page["errorMessage"] , textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
               FilledButton(

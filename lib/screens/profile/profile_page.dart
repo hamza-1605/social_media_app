@@ -10,9 +10,8 @@ import 'package:social_media_app/screens/profile/widgets/name_and_about.dart';
 import 'package:social_media_app/widgets/common/custom_button.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key, required this.userid, required this.email});
+  const ProfilePage({super.key, required this.userid});
   final String userid;
-  final String email;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -24,25 +23,37 @@ class _ProfilePageState extends State<ProfilePage>{
     final loggedUser = context.read<UserProvider>().getUser!;
     
     return Scaffold(
-      appBar: AppBar(      
-        title: Text(
-          widget.email,
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-        ),
-        centerTitle: true,
-        forceMaterialTransparency: true,
-        actions: [
-          loggedUser.userid == widget.userid 
-          ? GestureDetector(
-              onTap: (){
-                Navigator.pushNamed(context, "/settings");
-              },
-              child: Icon(Icons.settings)
-            )
-          : SizedBox.shrink(),
-        ],
-        actionsPadding: EdgeInsets.only(right: 10.0),
+      appBar: AppBar(
+      centerTitle: true,
+      forceMaterialTransparency: true,
+      actionsPadding: const EdgeInsets.only(right: 10),
+      title: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.userid)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Text(" ");
+          }
+
+          final user = User.fromSnapToUser(snapshot.data!)!;
+          return Text(
+            user.email,
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+          );
+        },
       ),
+      actions: [
+        if (loggedUser.userid == widget.userid)
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, "/settings");
+            },
+            child: const Icon(Icons.settings),
+          ),
+      ],
+    ),
     
       body: Column(
         children: [

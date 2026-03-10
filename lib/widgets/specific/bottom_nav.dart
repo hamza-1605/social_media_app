@@ -42,7 +42,6 @@ class _BottomNavState extends State<BottomNav> {
         NotificationsPage(),
         ProfilePage( 
           userid: userProvider.getUser!.userid,
-          email: userProvider.getUser!.email,
         ),
       ][currentIndex],
 

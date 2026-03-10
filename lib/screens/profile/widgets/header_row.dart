@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/core/constants/links.dart';
 import 'package:social_media_app/models/user.dart';
@@ -16,7 +17,7 @@ class HeaderRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric( horizontal: 20.0, vertical: 10.0 ),
           child: CircleAvatar(
             radius: 50.0,
-            backgroundImage: NetworkImage(
+            backgroundImage: CachedNetworkImageProvider(
               user.photoUrl ?? Links().genericUser,
             ),
           ),

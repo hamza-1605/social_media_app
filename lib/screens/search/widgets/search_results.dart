@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -50,7 +51,7 @@ class SearchResults extends StatelessWidget {
               subtitle: Text( user["email"] ),
               leading: CircleAvatar(
                 radius: 18,
-                backgroundImage: NetworkImage( user['photoUrl'] ?? Links().genericUser ),
+                backgroundImage: CachedNetworkImageProvider( user['photoUrl'] ?? Links().genericUser ),
               ),
               onTap: () {
                 FocusScope.of(context).unfocus();
@@ -59,7 +60,6 @@ class SearchResults extends StatelessWidget {
                   '/viewProfile', 
                   arguments: {
                     "userid": user["userid"],
-                    "email": user["email"],
                   }
                 );
               },

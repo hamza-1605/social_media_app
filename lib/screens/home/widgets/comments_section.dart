@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_media_app/core/constants/app_colors.dart';
 import 'package:social_media_app/core/constants/links.dart';
 import 'package:social_media_app/core/providers/user_provider.dart';
 import 'package:social_media_app/core/resources/firestore_methods.dart';
@@ -105,14 +107,15 @@ class _CommentsSectionState extends State<CommentsSection> {
                             '/viewProfile', 
                             arguments: {
                               "userid": snap["userid"],
-                              "email": snap["username"],
                             }
                           ),
                           child: CircleAvatar(
                             radius: 18,
                             child: ClipOval(
-                              child: Image.network( 
-                                snap["photoUrl"] ?? Links().genericUser, 
+                              child: CachedNetworkImage( 
+                                imageUrl: snap["photoUrl"] ?? Links().genericUser,
+                                placeholder: (context, url) => Container(color: AppColors.lightGrey),
+                                errorWidget: (context, url, error) => Icon(Icons.error_outline),
                                 fit: BoxFit.cover, 
                                 height: 36, 
                                 width: 36,
@@ -126,7 +129,6 @@ class _CommentsSectionState extends State<CommentsSection> {
                             '/viewProfile', 
                             arguments: {
                               "userid": snap["userid"],
-                              "email": '${snap["username"]}',
                             }
                           ),
                           child: Text( 
@@ -194,7 +196,11 @@ class _CommentsSectionState extends State<CommentsSection> {
                   CircleAvatar(
                     radius: 16,
                     child: ClipOval(
-                      child: Image.network( user.photoUrl ?? Links().genericUser ),
+                      child: CachedNetworkImage( 
+                        imageUrl: user.photoUrl ?? Links().genericUser,
+                        placeholder: (context, url) => Container(color: AppColors.lightGrey),
+                        errorWidget: (context, url, error) => Icon(Icons.error_outline), 
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),

@@ -124,7 +124,7 @@ class FirestoreMethods {
       await firestore.collection('posts').doc(postId).delete() ;
       
       await firestore.collection('users').doc(userid).update({
-        "postsCount" : FieldValue.increment(1),
+        "postsCount" : FieldValue.increment(-1),
       });
     } catch (e) {
       print(e.toString()) ;

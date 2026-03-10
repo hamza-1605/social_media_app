@@ -50,7 +50,6 @@ class AppRoutes {
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(builder: (context) => ProfilePage(
           userid: args['userid'],
-          email: args['email'],
         ));
       
       case '/followList':
