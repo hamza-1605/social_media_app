@@ -78,43 +78,47 @@ class _ProfilePageState extends State<ProfilePage>{
                 shrinkWrap: true,
                 children: [
                   HeaderRow( user: user ),
-                  NameAndAbout( name: '${user.firstname} ${user.lastname}', bio: user.bio ?? "" ),
+                  NameAndAbout( name: '${user.firstname} ${user.lastname}', bio: user.bio ),
                   
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Row(
-                      spacing: 5,
-                      children: loggedUser.userid != widget.userid ? [
-                        CustomButton(
-                          transparent: user.followers.contains(loggedUser.userid) ? true : false ,
-                          btnName: user.followers.contains(loggedUser.userid) ?  "Unfollow" : "Follow", 
-                          onTap: () async {
-                            bool isFollowing = await FirestoreMethods().followUser(
-                              loggedUser.userid,
-                              widget.userid,
-                            );
-
-                            if( isFollowing ){
-                              await FirestoreMethods().generateNotification(
-                                senderId: loggedUser.userid, 
-                                receiverId: user.userid,
-                                notificationType: "follow", 
-                                text: '${loggedUser.firstname} ${loggedUser.lastname} started following you.'
+                    child: loggedUser.userid != widget.userid ? 
+                      Row(
+                        children: [
+                          CustomButton(
+                            transparent: user.followers.contains(loggedUser.userid) ? true : false ,
+                            btnName: user.followers.contains(loggedUser.userid) ?  "Unfollow" : "Follow", 
+                            onTap: () async {
+                              bool isFollowing = await FirestoreMethods().followUser(
+                                loggedUser.userid,
+                                widget.userid,
                               );
-
-                            }
-                            else{
-                              await FirestoreMethods().deleteFollowNotification(user.userid, loggedUser.userid);
-                            }
-
-                            if(!context.mounted) return;
-                            await context.read<UserProvider>().refreshUser();
-                          },
+                          
+                              if( isFollowing ){
+                                await FirestoreMethods().generateNotification(
+                                  senderId: loggedUser.userid, 
+                                  receiverId: user.userid,
+                                  notificationType: "follow", 
+                                  text: '${loggedUser.firstname} ${loggedUser.lastname} started following you.'
+                                );
+                          
+                              }
+                              else{
+                                await FirestoreMethods().deleteFollowNotification(user.userid, loggedUser.userid);
+                              }
+                          
+                              if(!context.mounted) return;
+                              await context.read<UserProvider>().refreshUser();
+                            },
+                          ),
+                        ],
+                      )
+                    : Row(
+                      children: [
+                        CustomButton(
+                          btnName: "Edit Profile", 
+                          onTap: () => Navigator.pushNamed(context, '/editProfile')
                         ),
-                      ]
-                      : [
-                        CustomButton(btnName: "Edit Profile", onTap: (){}),
-                        CustomButton(btnName: "Share Profile", onTap: (){})
                       ]
                     ),
                   ),

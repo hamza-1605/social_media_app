@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 class NameAndAbout extends StatelessWidget {
   const NameAndAbout({super.key, required this.name, required this.bio});
   final String name;
-  final String bio;
+  final String? bio;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -19,13 +19,16 @@ class NameAndAbout extends StatelessWidget {
               fontWeight: FontWeight.w700
             ),
           ),
+          
+          bio != null ? 
           Text( 
-            bio,
+            bio! ,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500
             ),
-          ),
+          )
+          : SizedBox.shrink(),
         ],
       ),
     );

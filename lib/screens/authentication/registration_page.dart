@@ -104,16 +104,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ),
                               ),
                             ),
-                            image == null
-                            ? Positioned(
-                                bottom: 0,
-                                right: 10,
-                                child: Icon(
-                                  Icons.add_a_photo_outlined,
-                                  color: Theme.of(context).primaryColor ,
-                                ),
-                              )
-                            : SizedBox(),
+                            Positioned(
+                              bottom: 0,
+                              right: 10,
+                              child: Icon(
+                                image == null ? Icons.add_a_photo_outlined : Icons.edit,
+                                color: Theme.of(context).primaryColor ,
+                              ),
+                            ),
                           ],
                         ),
                       ),

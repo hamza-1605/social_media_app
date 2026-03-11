@@ -195,12 +195,9 @@ class _CommentsSectionState extends State<CommentsSection> {
                   const SizedBox(width: 10),
                   CircleAvatar(
                     radius: 16,
-                    child: ClipOval(
-                      child: CachedNetworkImage( 
-                        imageUrl: user.photoUrl ?? Links().genericUser,
-                        placeholder: (context, url) => Container(color: AppColors.lightGrey),
-                        errorWidget: (context, url, error) => Icon(Icons.error_outline), 
-                      ),
+                    backgroundColor: AppColors.middlewareGrey,
+                    backgroundImage: CachedNetworkImageProvider( 
+                        user.photoUrl ?? Links().genericUser,
                     ),
                   ),
                   const SizedBox(width: 10),

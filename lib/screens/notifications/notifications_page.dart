@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:social_media_app/core/constants/app_colors.dart';
 import 'package:social_media_app/core/providers/user_provider.dart';
 import 'package:social_media_app/widgets/common/center_loader.dart';
 
@@ -21,7 +22,7 @@ class NotificationsPage extends StatelessWidget {
         forceMaterialTransparency: true,
       ),
       body: Padding(
-        padding: EdgeInsets.all(10.0),
+        padding: EdgeInsets.symmetric(vertical: 10.0),
         child: StreamBuilder(
           stream: FirebaseFirestore.instance.collection('users').doc(user.userid).collection('notifications').orderBy('createdAt', descending: true).snapshots() ,
           builder: (context, asyncSnapshot) {
@@ -40,7 +41,7 @@ class NotificationsPage extends StatelessWidget {
                 final icon = notification['notificationType'] == 'like' ? Icons.favorite 
                   : notification['notificationType'] == 'comment' ? Icons.message_rounded : Icons.person_add;
                 
-                final date = '${DateFormat.yMd().format(
+                final date = '${DateFormat.yMMMd().format(
                   notification['createdAt'].toDate()
                 )}, ${DateFormat.Hm().format(
                   notification['createdAt'].toDate() 
@@ -48,7 +49,12 @@ class NotificationsPage extends StatelessWidget {
 
                 final textButton = notification['postId'] != null 
                   ? OutlinedButton(
-                    onPressed: () => Navigator.pushNamed(context, '/viewpost', arguments: { "postid" : notification["postId"]}),
+                    onPressed: () {
+                      FirebaseFirestore.instance.collection('users').doc(user.userid).collection('notifications').doc(notification['notificationId']).update({
+                        "isRead" : true
+                      });
+                      Navigator.pushNamed(context, '/viewpost', arguments: { "postid" : notification["postId"]});
+                    }, 
                     child: Text('View Post')
                   )  
                   : OutlinedButton(
@@ -57,17 +63,33 @@ class NotificationsPage extends StatelessWidget {
                   );
 
 
-                return Card(
-                  child: ListTile(
-                    leading: Icon( icon , size: 30,) ,
-                    title: Text( notification['text'] , style: TextStyle(fontWeight: FontWeight.w700) ),
-                    subtitle: Text( date ),
-
-                    trailing: textButton
-                  ),
+                return ListTile(
+                  tileColor: notification["isRead"] 
+                            ? Theme.of(context).scaffoldBackgroundColor 
+                            : AppColors.logoColor.withAlpha(20),
+                  
+                  leading: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 10.0,
+                    children: [
+                      !notification["isRead"] ? CircleAvatar(radius: 3, backgroundColor: AppColors.logoColor) : SizedBox.shrink(),
+                      Icon(icon , size: 25),
+                    ],
+                  ) ,
+                  
+                  title: Text( notification['text'] , style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13
+                  ) ),
+                  
+                  subtitle: Text( date , style: TextStyle(
+                    fontSize: 11
+                  ) ),
+                
+                  trailing: textButton,
                 );
               }, 
-              separatorBuilder: (context, index) => SizedBox(height: 10.0), 
+              separatorBuilder: (context, index) => SizedBox(height: 1.0), 
               itemCount: notifList.length
             );
           }

@@ -81,6 +81,7 @@ class AuthMethods {
   }
 
   
+
   Future<String> loginCredentials({
     required String email,
     required String password,
@@ -107,5 +108,10 @@ class AuthMethods {
       return message ;
     }
   }
+
+
+
+  
+
 
 }

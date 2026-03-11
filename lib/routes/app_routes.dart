@@ -7,6 +7,7 @@ import 'package:social_media_app/screens/create/widgets/add_post.dart';
 import 'package:social_media_app/screens/home/widgets/follow_list.dart';
 import 'package:social_media_app/screens/home/widgets/story_preview.dart';
 import 'package:social_media_app/screens/profile/profile_page.dart';
+import 'package:social_media_app/screens/profile/widgets/edit_profile.dart';
 import 'package:social_media_app/screens/profile/widgets/settings_page.dart';
 import 'package:social_media_app/widgets/common/view_post.dart';
 import 'package:social_media_app/widgets/specific/bottom_nav.dart';
@@ -51,6 +52,9 @@ class AppRoutes {
         return MaterialPageRoute(builder: (context) => ProfilePage(
           userid: args['userid'],
         ));
+      
+      case '/editProfile':
+        return MaterialPageRoute(builder: (context) => EditProfile(),);
       
       case '/followList':
         final args = settings.arguments as Map<String, dynamic>;

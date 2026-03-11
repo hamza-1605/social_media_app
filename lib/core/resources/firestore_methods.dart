@@ -272,5 +272,45 @@ class FirestoreMethods {
 
 
 
+
+  Future<void> updateProfile({
+    required String userid,
+    required String firstname,
+    required String lastname,
+    required String bio,
+    Uint8List? file,
+    bool removeImage = false,
+  }) async {
+    try {
+      Map<String, dynamic> updateData = {
+        "firstname": firstname,
+        "lastname": lastname,
+        "bio": bio,
+      };
+
+      if( removeImage ){
+        updateData["photoUrl"] = null;
+      } 
+      else if( file != null ){
+        // fetching old image
+        final userDoc = await firestore.collection('users').doc(userid).get();
+        final currentPhotoUrl = userDoc.data()?['photoUrl'] as String?;
+
+        // Delete old image if exists
+        if (currentPhotoUrl != null) {
+          await StorageMethods().deleteProfileImageFromCloudinary(currentPhotoUrl);
+        }
+        
+        String? photoUrl = await StorageMethods()
+                        .uploadImageToCloudinary(image: file, isPost: false);
+        updateData["photoUrl"] = photoUrl;
+      }
+
+      await firestore.collection('users').doc(userid).update(updateData);
+    } 
+    catch (e) {
+      print(e.toString());
+    }
+  }
   
 }

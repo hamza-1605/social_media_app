@@ -44,6 +44,16 @@ class AppTheme {
       color: const Color.fromARGB(255, 252, 249, 255)
     ),
 
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        padding: EdgeInsets.all(15.0),
+        textStyle: TextStyle(
+          fontSize: 10,
+        )
+      )
+    ),
+    
+
   );
 
 
@@ -91,6 +101,16 @@ class AppTheme {
     switchTheme: SwitchThemeData(
       trackColor: WidgetStatePropertyAll( AppColors.buttonBlue ),
       thumbColor: WidgetStatePropertyAll( Colors.white ),
+    ),
+
+
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        padding: EdgeInsets.all(15.0),
+        textStyle: TextStyle(
+          fontSize: 10,
+        )
+      )
     ),
 
     
