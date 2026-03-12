@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,11 @@ class NotificationsPage extends StatelessWidget {
             }
 
             final notifList = asyncSnapshot.data!.docs ;
+
+            if(notifList.isEmpty){
+              return Center(child: Text("You have no notifications"));
+            }
+
             return ListView.separated(
               itemBuilder: (context, index) {
                 final notification = notifList[index];
